@@ -1,6 +1,6 @@
 @extends('layout.main') @section('content')
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 <section class="forms">
     <div class="container-fluid">
@@ -16,31 +16,14 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <input type="hidden" name="customer_group" value="{{$lims_customer_data->customer_group_id}}">
-                                    <label>{{trans('file.Customer Group')}} *</strong> </label>
-                                    <select required class="form-control selectpicker" name="customer_group_id">
-                                        @foreach($lims_customer_group_all as $customer_group)
-                                            <option value="{{$customer_group->id}}">{{$customer_group->name}}</option>
-                                        @endforeach
-                                    </select>
+                                    <label>{{trans('file.code')}} *</strong> </label>
+                                    <input type="text" name="code" value="{{$lims_customer_data->code}}" required class="form-control">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>{{trans('file.name')}} *</strong> </label>
-                                    <input type="text" name="customer_name" value="{{$lims_customer_data->name}}" required class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>{{trans('file.Company Name')}} </label>
-                                    <input type="text" name="company_name" value="{{$lims_customer_data->company_name}}" class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>{{trans('file.Email')}}</label>
-                                    <input type="email" name="email" value="{{$lims_customer_data->email}}" class="form-control">
+                                    <input type="text" name="name" value="{{$lims_customer_data->name}}" required class="form-control">
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -52,12 +35,6 @@
                                        <strong>{{ $errors->first('phone_number') }}</strong>
                                     </span>
                                     @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>{{trans('file.Tax Number')}}</label>
-                                    <input type="text" name="tax_no" class="form-control" value="{{$lims_customer_data->tax_no}}">
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -74,45 +51,11 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>{{trans('file.State')}}</label>
-                                    <input type="text" name="state" value="{{$lims_customer_data->state}}" class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>{{trans('file.Postal Code')}}</label>
-                                    <input type="text" name="postal_code" value="{{$lims_customer_data->postal_code}}" class="form-control">
-                                </div>
-                            </div>
-                            @if(!$lims_customer_data->user_id)
-                            <div class="col-md-6 mt-3">
-                                <div class="form-group">
-                                    <label>{{trans('file.Add User')}}</label>&nbsp;
-                                    <input type="checkbox" name="user" value="1" />
-                                </div>
-                            </div>
-                            @endif
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>{{trans('file.Country')}}</label>
-                                    <input type="text" name="country" value="{{$lims_customer_data->country}}" class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-md-6 user-input">
-                                <div class="form-group">
-                                    <label>{{trans('file.UserName')}} *</label>
-                                    <input type="text" name="name" class="form-control">
-                                    @if($errors->has('name'))
-                                   <span>
-                                       <strong>{{ $errors->first('name') }}</strong>
-                                    </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6 user-input">
-                                <div class="form-group">
-                                    <label>{{trans('file.Password')}} *</label>
-                                    <input type="password" name="password" class="form-control">
+                                    <label>{{trans('file.Status')}}</strong> </label>
+                                    <select name="status" class="form-control" id="inputPaymentOption">
+                                        <option {{ $lims_customer_data->is_active == 1 ? 'selected' : '' }} value="1">Active</option>
+                                        <option {{ $lims_customer_data->is_active == 0 ? 'selected' : '' }} value="0">Inactive</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -148,7 +91,7 @@
             $('input[name="password"]').prop('required',false);
         }
     });
-        
+
     var customer_group = $("input[name='customer_group']").val();
     $('select[name=customer_group_id]').val(customer_group);
 </script>

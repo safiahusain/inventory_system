@@ -1,5 +1,13 @@
-<?php 
+<?php
 return [
+    'Res ph#'     => 'Res ph#',
+    'Driver'     => 'Driver',
+    'code'     => 'Code',
+    'Advance'     => 'Advance',
+    'Office ph#'     => 'Office ph#',
+    'Time'     => 'Time',
+    'Cow'     => 'Cow',
+    'Buffalo'     => 'Buffalo',
 	"dashboard" => "Instrumententafel",
 	"language" => "Sprache",
 	"revenue" => "Einnahmen",
@@ -467,7 +475,7 @@ return [
 	"Update Payroll" => "Aktualisieren Sie die Abrechnung",
 	"Method" => "Methode",
 	"Sale Return" => "Verkauf zurück",
-	"Purchase Return" => "Rückgabe",	
+	"Purchase Return" => "Rückgabe",
 	"Net Sale Return" => "Nettoverkaufsrendite,",
 	"Net Purchase Return" => "Nettokauf zurück,",
 	"Attendance" => "Teilnahme",

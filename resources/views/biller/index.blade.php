@@ -1,9 +1,9 @@
 @extends('layout.main') @section('content')
 @if(session()->has('message'))
-  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message') !!}</div> 
+  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message') !!}</div>
 @endif
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 <section>
     <div class="container-fluid">
@@ -32,7 +32,7 @@
                 <tr data-id="{{$biller->id}}">
                     <td>{{$key}}</td>
                     @if($biller->image)
-                    <td> <img src="{{url('public/images/biller',$biller->image)}}" height="80" width="80">
+                    <td> <img src="{{asset('images/biller/',$biller->image)}}" height="80" width="80">
                     </td>
                     @else
                     <td>No Image</td>
@@ -56,7 +56,7 @@
                             <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default" user="menu">
                                 @if(in_array("billers-edit", $all_permission))
                                 <li>
-                                    <a href="{{ route('biller.edit', $biller->id) }}" class="btn btn-link"><i class="dripicons-document-edit"></i> {{trans('file.edit')}}</a> 
+                                    <a href="{{ route('biller.edit', $biller->id) }}" class="btn btn-link"><i class="dripicons-document-edit"></i> {{trans('file.edit')}}</a>
                                 </li>
                                 @endif
                                 <li class="divider"></li>
@@ -121,7 +121,7 @@
     var biller_id = [];
     var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
     var all_permission = <?php echo json_encode($all_permission) ?>;
-    
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -208,7 +208,7 @@
                         body: function ( data, row, column, node ) {
                             if (column === 0 && (data.indexOf('<img src=') != -1)) {
                                 var regex = /<img.*?src=['"](.*?)['"]/;
-                                data = regex.exec(data)[1];                 
+                                data = regex.exec(data)[1];
                             }
                             return data;
                         }

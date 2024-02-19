@@ -1,6 +1,6 @@
 @extends('layout.main') @section('content')
 
-@if(empty($product_name))
+@if(empty($sale_array))
 <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{'No Data exist between this date range!'}}</div>
 @endif
 
@@ -26,13 +26,13 @@
                 </div>
                 <div class="col-md-4 mt-4">
                     <div class="form-group row">
-                        <label class="d-tc mt-2"><strong>{{trans('file.Choose Warehouse')}}</strong> &nbsp;</label>
+                        <label class="d-tc mt-2"><strong>{{trans('file.Choose Customer')}}</strong> &nbsp;</label>
                         <div class="d-tc">
-                            <input type="hidden" name="warehouse_id_hidden" value="{{$warehouse_id}}" />
-                            <select id="warehouse_id" name="warehouse_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" >
-                                <option value="0">{{trans('file.All Warehouse')}}</option>
-                                @foreach($lims_warehouse_list as $warehouse)
-                                <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
+                            <input type="hidden" name="customer_id_hidden" value="{{$customer_id}}" />
+                            <select id="customer_id" name="customer_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" >
+                                <option value="0">{{trans('file.All customer')}}</option>
+                                @foreach($customers as $customer)
+                                <option value="{{$customer->id}}">{{$customer->name}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -59,81 +59,22 @@
                 </tr>
             </thead>
             <tbody>
-                @if(!empty($product_name))
-                @foreach($product_id as $key => $pro_id)
-                <tr>
-                    <td>{{$key}}</td>
-                    <td>{{$product_name[$key]}}</td>
-                    <?php
-                        if($warehouse_id == 0){
-                            if($variant_id[$key]) {
-                                $sold_price = DB::table('product_sales')->where([
-                                    ['product_id', $pro_id],
-                                    ['variant_id', $variant_id[$key] ]
-                                ])->whereDate('created_at','>=', $start_date)
-                                  ->whereDate('created_at','<=', $end_date)
-                                  ->sum('total');
-
-                                $product_sale_data = DB::table('product_sales')->where([
-                                    ['product_id', $pro_id],
-                                    ['variant_id', $variant_id[$key] ]
-                                ])->whereDate('created_at','>=', $start_date)
-                                  ->whereDate('created_at','<=', $end_date)
-                                  ->get();
-                            }
-                            else {
-                                $sold_price = DB::table('product_sales')->where('product_id', $pro_id)
-                                ->whereDate('created_at','>=', $start_date)->whereDate('created_at','<=', $end_date)->sum('total');
-
-                                $product_sale_data = DB::table('product_sales')->where('product_id', $pro_id)->whereDate('created_at','>=', $start_date)->whereDate('created_at','<=', $end_date)->get();
-                            }
-                        }
-                        else{
-                            if($variant_id[$key]) {
-                                $sold_price = DB::table('sales')
-                                    ->join('product_sales', 'sales.id', '=', 'product_sales.sale_id')->where([
-                                        ['product_sales.product_id', $pro_id],
-                                        ['variant_id', $variant_id[$key] ],
-                                        ['sales.warehouse_id', $warehouse_id]
-                                    ])->whereDate('sales.created_at','>=', $start_date)->whereDate('sales.created_at','<=', $end_date)->sum('total');
-                                $product_sale_data = DB::table('sales')
-                                    ->join('product_sales', 'sales.id', '=', 'product_sales.sale_id')->where([
-                                        ['product_sales.product_id', $pro_id],
-                                        ['variant_id', $variant_id[$key] ],
-                                        ['sales.warehouse_id', $warehouse_id]
-                                    ])->whereDate('sales.created_at','>=', $start_date)->whereDate('sales.created_at','<=', $end_date)->get();
-                            }
-                            else {
-                                $sold_price = DB::table('sales')
-                                    ->join('product_sales', 'sales.id', '=', 'product_sales.sale_id')->where([
-                                        ['product_sales.product_id', $pro_id],
-                                        ['sales.warehouse_id', $warehouse_id]
-                                    ])->whereDate('sales.created_at','>=', $start_date)->whereDate('sales.created_at','<=', $end_date)->sum('total');
-                                $product_sale_data = DB::table('sales')
-                                    ->join('product_sales', 'sales.id', '=', 'product_sales.sale_id')->where([
-                                        ['product_sales.product_id', $pro_id],
-                                        ['sales.warehouse_id', $warehouse_id]
-                                    ])->whereDate('sales.created_at','>=', $start_date)->whereDate('sales.created_at','<=', $end_date)->get();
-                            }
-                        }
-                        $sold_qty = 0;
-                        foreach ($product_sale_data as $product_sale) {
-                            $unit = DB::table('units')->find($product_sale->sale_unit_id);
-                            if($unit){
-                                if($unit->operator == '*')
-                                    $sold_qty += $product_sale->qty * $unit->operation_value;
-                                elseif($unit->operator == '/')
-                                    $sold_qty += $product_sale->qty / $unit->operation_value;
-                            }
-                            else
-                                $sold_qty += $product_sale->qty;
-                        }
-                    ?>
-                    <td>{{number_format((float)$sold_price, 2, '.', '')}}</td>
-                    <td>{{$sold_qty}}</td>
-                    <td>{{$product_qty[$key]}}</td>
-                </tr>
-                @endforeach
+                @if(!empty($sale_array))
+                    @php
+                        $i = 0;
+                    @endphp
+                    @foreach($sale_array as $data_key => $value)
+                        @php
+                            $i++;
+                        @endphp
+                        <tr>
+                            <td>{{$i}}</td>
+                            <td>{{$data_key}}</td>
+                            <td>{{$value['amount']}}</td>
+                            <td>{{$value['qty']}}</td>
+                            <td>{{$stock[$data_key]}}</td>
+                        </tr>
+                    @endforeach
                 @endif
             </tbody>
             <tfoot>
@@ -153,7 +94,7 @@
     $("ul#report").addClass("show");
     $("ul#report #sale-report-menu").addClass("active");
 
-    $('#warehouse_id').val($('input[name="warehouse_id_hidden"]').val());
+    $('#customer_id').val($('input[name="customer_id_hidden"]').val());
     $('.selectpicker').selectpicker('refresh');
 
     $('#report-table').DataTable( {

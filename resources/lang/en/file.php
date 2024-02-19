@@ -1,5 +1,19 @@
-<?php 
+<?php
 return [
+    'item'   =>  'Item',
+    'unit'   =>  'Unit',
+    'stock'   =>  'Stock',
+    'Add Milk Spoilation'   =>  'Add Milk Spoilation',
+    'Milk Spoilation List'   =>  'Milk Spoilation List',
+    'Milk Spoilation'   =>  'Milk Spoilation',
+    'Res ph#'     => 'Res ph#',
+    'Driver'     => 'Driver',
+    'code'     => 'Code',
+    'Advance'     => 'Advance',
+    'Office ph#'     => 'Office ph#',
+    'Time'     => 'Time',
+    'Cow'     => 'Cow',
+    'Buffalo'     => 'Buffalo',
 	'dashboard' => 'Dashboard',
 	'language' => 'Language',
 	'revenue' => 'Revenue',

@@ -1,5 +1,13 @@
-<?php 
+<?php
 return [
+    'Res ph#'     => 'Res ph#',
+    'Driver'     => 'Driver',
+    'code'     => 'Code',
+    'Advance'     => 'Advance',
+    'Office ph#'     => 'Office ph#',
+    'Time'     => 'Time',
+    'Cow'     => 'Cow',
+    'Buffalo'     => 'Buffalo',
 	"dashboard" => "Приборная доска",
 	"language" => "язык",
 	"revenue" => "доходов",
@@ -440,7 +448,7 @@ return [
 	"Image name must be same as product name" =>  "Название изображения должно совпадать с именем продукта",
 	"Paying Amount" => "Платежная сумма",
 	"Payable Amount" => "Сумма кредитоспособности",
-	"Change" => "менять",	
+	"Change" => "менять",
 	"Back" => "назад",
 	"Role Permission" => "Роль Разрешения",
 	"Exclusive: Poduct price = Actual product price + Tax. Inclusive: Actual product price = Product price - Tax" => "Эксклюзив: цена продукта = фактическая цена продукта + налог. Включено: фактическая цена продукта = цена продукта - налог.",
@@ -467,7 +475,7 @@ return [
 	"Update Payroll" => "Обновить платежную ведомость",
 	"Method" => "метод",
 	"Sale Return" => "Продажа Возврат",
-	"Purchase Return" => "Возврат покупки",	
+	"Purchase Return" => "Возврат покупки",
 	"Net Sale Return" => "Чистая прибыль от продаж,",
 	"Net Purchase Return" => "Чистый возврат покупки,",
 	"Attendance" => "посещаемость",

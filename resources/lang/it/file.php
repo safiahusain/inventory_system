@@ -1,5 +1,13 @@
-<?php 
+<?php
 return [
+    'Res ph#'     => 'Res ph#',
+    'Driver'     => 'Driver',
+    'code'     => 'Code',
+    'Advance'     => 'Advance',
+    'Office ph#'     => 'Office ph#',
+    'Time'     => 'Time',
+    'Cow'     => 'Cow',
+    'Buffalo'     => 'Buffalo',
 	"dashboard" => "Cruscotto",
 	"language" => "Linguaggio",
 	"revenue" => "Reddito",
@@ -440,7 +448,7 @@ return [
 	"Image name must be same as product name" =>  "Il nome dell'immagine deve essere uguale al nome del prodotto",
 	"Paying Amount" => "Importo di pagamento",
 	"Payable Amount" => "Importo da pagare",
-	"Change" => "Modificare",	
+	"Change" => "Modificare",
 	"Back" => "Indietro",
 	"Role Permission" => "Permesso di ruolo",
 	"Exclusive: Poduct price = Actual product price + Tax. Inclusive: Actual product price = Product price - Tax" => "Esclusivo: prezzo del prodotto = prezzo effettivo del prodotto + tasse. Inclusivo: prezzo del prodotto effettivo = prezzo del prodotto - tasse.",
@@ -467,7 +475,7 @@ return [
 	"Update Payroll" => "Aggiorna paghe",
 	"Method" => "Metodo",
 	"Sale Return" => "Ritorno alla vendita",
-	"Purchase Return" => "Ritorno di acquisto",	
+	"Purchase Return" => "Ritorno di acquisto",
 	"Net Sale Return" => "Ritorno in vendita netto,",
 	"Net Purchase Return" => "Ritorno all'acquisto netto,",
 	"Attendance" => "partecipazione",

@@ -1,22 +1,22 @@
 @extends('layout.main') @section('content')
 @if(session()->has('create_message'))
-    <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('create_message') !!}</div> 
+    <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('create_message') !!}</div>
 @endif
 @if(session()->has('edit_message'))
-    <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('edit_message') }}</div> 
+    <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('edit_message') }}</div>
 @endif
 @if(session()->has('import_message'))
-    <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('import_message') !!}</div> 
+    <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('import_message') !!}</div>
 @endif
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 
 <section>
     <div class="container-fluid">
         @if(in_array("customers-add", $all_permission))
             <a href="{{route('customer.create')}}" class="btn btn-info"><i class="dripicons-plus"></i> {{trans('file.Add Customer')}}</a>&nbsp;
-            <a href="#" data-toggle="modal" data-target="#importCustomer" class="btn btn-primary"><i class="dripicons-copy"></i> {{trans('file.Import Customer')}}</a>
+            {{-- <a href="#" data-toggle="modal" data-target="#importCustomer" class="btn btn-primary"><i class="dripicons-copy"></i> {{trans('file.Import Customer')}}</a> --}}
         @endif
     </div>
     <div class="table-responsive">
@@ -24,13 +24,11 @@
             <thead>
                 <tr>
                     <th class="not-exported"></th>
-                    <th>{{trans('file.Customer Group')}}</th>
+                    <th>{{trans('file.code')}}</th>
                     <th>{{trans('file.name')}}</th>
-                    <th>{{trans('file.Company Name')}}</th>
-                    <th>{{trans('file.Email')}}</th>
                     <th>{{trans('file.Phone Number')}}</th>
-                    <th>{{trans('file.Tax Number')}}</th>
                     <th>{{trans('file.Address')}}</th>
+                    <th>{{trans('file.city')}}</th>
                     <th>{{trans('file.Balance')}}</th>
                     <th class="not-exported">{{trans('file.action')}}</th>
                 </tr>
@@ -39,28 +37,23 @@
                 @foreach($lims_customer_all as $key=>$customer)
                 <tr data-id="{{$customer->id}}">
                     <td>{{$key}}</td>
-                    <td>
-                        <?php $customer_group = DB::table('customer_groups')->where('id',$customer->customer_group_id)->first(); ?>
-                        {{  $customer_group->name }}
-                    </td>
+                    <td>{{ $customer->code }}</td>
                     <td>{{ $customer->name }}</td>
-                    <td>{{ $customer->company_name}}</td>
-                    <td>{{ $customer->email}}</td>
                     <td>{{ $customer->phone_number}}</td>
-                    <td>{{ $customer->tax_no}}</td>
-                    <td>{{ $customer->address}}, {{ $customer->city}}@if($customer->country) {{','. $customer->country}}@endif</td>
+                    <td>{{ $customer->address }}</td>
+                    <td>{{ $customer->city }}</td>
                     <td>{{ number_format($customer->deposit - $customer->expense, 2) }}</td>
                     <td>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{trans('file.action')}}
+                            {{-- <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{trans('file.action')}}
                                 <span class="caret"></span>
                                 <span class="sr-only">Toggle Dropdown</span>
-                            </button>
-                            <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default" user="menu">
+                            </button> --}}
+                            {{-- <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default" user="menu">
                                 @if(in_array("customers-edit", $all_permission))
-                                <li> 
+                                <li> --}}
                                     <a href="{{ route('customer.edit', $customer->id) }}" class="btn btn-link"><i class="dripicons-document-edit"></i> {{trans('file.edit')}}</a>
-                                </li>
+                                {{-- </li>
                                 @endif
                                 <li>
                                     <button type="button" data-id="{{$customer->id}}" class="deposit btn btn-link" data-toggle="modal" data-target="#depositModal" ><i class="dripicons-plus"></i> {{trans('file.Add Deposit')}}</button>
@@ -69,14 +62,14 @@
                                     <button type="button" data-id="{{$customer->id}}" class="getDeposit btn btn-link"><i class="fa fa-money"></i> {{trans('file.View Deposit')}}</button>
                                 </li>
                                 <li class="divider"></li>
-                                @if(in_array("customers-delete", $all_permission))
+                                @if(in_array("customers-delete", $all_permission)) --}}
                                 {{ Form::open(['route' => ['customer.destroy', $customer->id], 'method' => 'DELETE'] ) }}
-                                <li>
+                                {{-- <li> --}}
                                     <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="dripicons-trash"></i> {{trans('file.delete')}}</button>
-                                </li>
+                                {{-- </li>
                                 {{ Form::close() }}
-                                @endif
-                            </ul>
+                                @endif --}}
+                            {{-- </ul> --}}
                         </div>
                     </td>
                 </tr>
@@ -210,7 +203,7 @@
     var customer_id = [];
     var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
     var all_permission = <?php echo json_encode($all_permission) ?>;
-    
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -254,7 +247,7 @@
         var note = $('table.deposit-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(3)').text();
         if(note == 'N/A')
             note = '';
-        
+
         $('#edit-deposit input[name="deposit_id"]').val(id);
         $('#edit-deposit input[name="amount"]').val(amount);
         $('#edit-deposit textarea[name="note"]').val(note);
@@ -275,7 +268,7 @@
         'columnDefs': [
             {
                 "orderable": false,
-                'targets': [0, 9]
+                'targets': [0, 7]
             },
             {
                 'render': function(data, type, row, meta){
@@ -300,7 +293,7 @@
                 extend: 'pdf',
                 text: '{{trans("file.PDF")}}',
                 exportOptions: {
-                    columns: ':visible:Not(.not-exported)',
+                    columns: [0, 1, 2, 3, 4, 5, 6],
                     rows: ':visible'
                 },
             },
@@ -308,7 +301,7 @@
                 extend: 'csv',
                 text: '{{trans("file.CSV")}}',
                 exportOptions: {
-                    columns: ':visible:Not(.not-exported)',
+                    columns: [0, 1, 2, 3, 4, 5, 6],
                     rows: ':visible'
                 },
             },
@@ -316,7 +309,7 @@
                 extend: 'print',
                 text: '{{trans("file.Print")}}',
                 exportOptions: {
-                    columns: ':visible:Not(.not-exported)',
+                    columns: [0, 1, 2, 3, 4, 5, 6],
                     rows: ':visible'
                 },
             },

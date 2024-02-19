@@ -16,13 +16,14 @@ class SupplierController extends Controller
     public function index()
     {
         $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('suppliers-index')){
+        if($role->hasPermissionTo('suppliers-index'))
+        {
             $permissions = Role::findByName($role->name)->permissions;
             foreach ($permissions as $permission)
                 $all_permission[] = $permission->name;
             if(empty($all_permission))
-                $all_permission[] = 'dummy text';
-            $lims_supplier_all = Supplier::where('is_active', true)->get();
+                $all_permission[]   =   'dummy text';
+                $lims_supplier_all  =   Supplier::latest()->get();
             return view('supplier.index',compact('lims_supplier_all', 'all_permission'));
         }
         else
@@ -36,48 +37,82 @@ class SupplierController extends Controller
             return view('supplier.create');
         }
         else
+        {
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
+        }
     }
 
     public function store(Request $request)
     {
         $this->validate($request, [
-            'company_name' => [
-                'max:255',
-                    Rule::unique('suppliers')->where(function ($query) {
-                    return $query->where('is_active', 1);
-                }),
-            ],
-            'email' => [
-                'max:255',
-                    Rule::unique('suppliers')->where(function ($query) {
-                    return $query->where('is_active', 1);
-                }),
-            ],
-            'image' => 'image|mimes:jpg,jpeg,png,gif|max:100000',
+            'code'          =>  'required',
+            'name'          =>  'required',
+            'phone_number'  =>  'required',
+            'res_phone'     =>  'required',
+            'office_phone'  =>  'required',
+            'city'          =>  'required',
+            'address'       =>  'required',
+            'status'        =>  'required',
         ]);
-        
-        $lims_supplier_data = $request->except('image');
-        $lims_supplier_data['is_active'] = true;
-        $image = $request->image;
-        if ($image) {
-            $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
-            $imageName = preg_replace('/[^a-zA-Z0-9]/', '', $request['company_name']);
-            $imageName = $imageName . '.' . $ext;
-            $image->move('public/images/supplier', $imageName);
-            $lims_supplier_data['image'] = $imageName;
+
+        $products      =   [];
+
+        if(isset($request->cow_status)  &&  (!$request->cow_morning  &&  !$request->cow_evening))
+        {
+            $message = 'Select atleast one time zone of Cow';
+            return redirect()->back()->with('message', $message);
         }
-        Supplier::create($lims_supplier_data);
-        $message = 'Data inserted successfully';
-        try{
-            Mail::send( 'mail.supplier_create', $lims_supplier_data, function( $message ) use ($lims_supplier_data)
-            {
-                $message->to( $lims_supplier_data['email'] )->subject( 'New Supplier' );
-            });
+
+        if(isset($request->buffalo_status)  &&  (!$request->buffalo_morning  &&  !$request->buffalo_evening))
+        {
+            $message = 'Select atleast one time zone of Buffalo';
+            return redirect()->back()->with('message', $message);
         }
-        catch(\Exception $e) {
-            $message = 'Data inserted successfully. Please setup your <a href="setting/mail_setting">mail setting</a> to send mail.';
+
+        $default_products   =   config('default.data');
+
+        foreach($default_products   as $key =>  $value)
+        {
+            $status     =   $key.'_status';
+            $morning    =   $key.'_morning';
+            $evening    =   $key.'_evening';
+            $amount     =   $key.'_amount';
+
+            $products      +=   [
+                $key    =>  [
+                    'status'    =>  $request->$status   ?   1   :   0,
+                    'time'      =>  [
+                        'm_status'  =>  $request->$morning   ?   1   :   0,
+                        'e_status'  =>  $request->$evening   ?   1   :   0,
+                    ],
+                    'amount'    =>  $request->$amount   ?   $request->$amount   :   null,
+                ]
+            ];
         }
+
+        $created    =   Supplier::create([
+            'code'          =>  $request->code,
+            'name'          =>  $request->name,
+            'phone_number'  =>  $request->phone_number,
+            'res_phone'     =>  $request->res_phone,
+            'office_phone'  =>  $request->office_phone,
+            'city'          =>  $request->city,
+            'driver'        =>  $request->driver,
+            'address'       =>  $request->address,
+            'advance'       =>  $request->advance   ?   $request->advance   :   null,
+            'is_active'     =>  $request->status  ==  '1'    ?   true    :   false,
+            'data'          =>  json_encode($products),
+        ]);
+
+        if($created)
+        {
+            $message = 'Data inserted successfully';
+        }
+        else
+        {
+            $message = 'Something went wrong while creating supplier';
+        }
+
         return redirect('supplier')->with('message', $message);
     }
 
@@ -95,35 +130,83 @@ class SupplierController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'company_name' => [
-                'max:255',
-                    Rule::unique('suppliers')->ignore($id)->where(function ($query) {
-                    return $query->where('is_active', 1);
-                }),
-            ],
-
-            'email' => [
-                'max:255',
-                    Rule::unique('suppliers')->ignore($id)->where(function ($query) {
-                    return $query->where('is_active', 1);
-                }),
-            ],
-            'image' => 'image|mimes:jpg,jpeg,png,gif|max:100000',
+            'code'          =>  'required',
+            'name'          =>  'required',
+            'phone_number'  =>  'required',
+            'res_phone'     =>  'required',
+            'office_phone'  =>  'required',
+            'city'          =>  'required',
+            'address'       =>  'required',
+            'status'        =>  'required',
         ]);
 
-        $input = $request->except('image');
-        $image = $request->image;
-        if ($image) {
-            $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
-            $imageName = preg_replace('/[^a-zA-Z0-9]/', '', $request['company_name']);
-            $imageName = $imageName . '.' . $ext;
-            $image->move('public/images/supplier', $imageName);
-            $input['image'] = $imageName;
+        $supplier           =  Supplier::where('id',$id)->first();
+
+        if($supplier)
+        {
+            $products      =   [];
+
+            if(isset($request->cow_status)  &&  (!$request->cow_morning  &&  !$request->cow_evening))
+            {
+                $message = 'Select atleast one time zone of Cow';
+                return redirect()->back()->with('message', $message);
+            }
+
+            if(isset($request->buffalo_status)  &&  (!$request->buffalo_morning  &&  !$request->buffalo_evening))
+            {
+                $message = 'Select atleast one time zone of Buffalo';
+                return redirect()->back()->with('message', $message);
+            }
+
+            $default_products   =   config('default.data');
+
+            foreach($default_products   as $key =>  $value)
+            {
+                $status     =   $key.'-status';
+                $morning    =   $key.'-morning';
+                $evening    =   $key.'-evening';
+                $amount     =   $key.'-amount';
+
+                $products      +=   [
+                    $key    =>  [
+                        'status'    =>  $request->$status   ?   1   :   0,
+                        'time'      =>  [
+                            'm_status'  =>  $request->$morning   ?   1   :   0,
+                            'e_status'  =>  $request->$evening   ?   1   :   0,
+                        ],
+                        'amount'    =>  $request->$amount   ?   $request->$amount   :   null,
+                    ]
+                ];
+            }
+
+            $updated    =   $supplier->update([
+                'code'          =>  $request->code,
+                'name'          =>  $request->name,
+                'phone_number'  =>  $request->phone_number,
+                'res_phone'     =>  $request->res_phone,
+                'office_phone'  =>  $request->office_phone,
+                'city'          =>  $request->city,
+                'address'       =>  $request->address,
+                'advance'       =>  $request->advance   ?   $request->advance   :   null,
+                'is_active'     =>  $request->status  ==  '1'    ?   true    :   false,
+                'data'          =>  json_encode($products),
+            ]);
+
+            if($updated)
+            {
+                $message = 'Data updated successfully';
+            }
+            else
+            {
+                $message = 'Something went wrong while updating supplier';
+            }
+        }
+        else
+        {
+            $message = 'Supplier not found';
         }
 
-        $lims_supplier_data = Supplier::findOrFail($id);
-        $lims_supplier_data->update($input);
-        return redirect('supplier')->with('message','Data updated successfully');
+        return redirect('supplier')->with('message', $message);
     }
 
     public function deleteBySelection(Request $request)
@@ -139,10 +222,27 @@ class SupplierController extends Controller
 
     public function destroy($id)
     {
-        $lims_supplier_data = Supplier::findOrFail($id);
-        $lims_supplier_data->is_active = false;
-        $lims_supplier_data->save();
-        return redirect('supplier')->with('not_permitted','Data deleted successfully');
+        $lims_supplier_data =   Supplier::where('id',$id)->first();
+
+        if($lims_supplier_data)
+        {
+            $deleted            =   $lims_supplier_data->delete();
+
+            if($deleted)
+            {
+                $message = 'Data deleted successfully';
+            }
+            else
+            {
+                $message = 'Something went wrong while updating supplier';
+            }
+        }
+        else
+        {
+            $message = 'Supplier not found';
+        }
+
+        return redirect('supplier')->with('not_permitted',$message);
     }
 
     public function importSupplier(Request $request)
@@ -196,9 +296,9 @@ class SupplierController extends Controller
                 }
                 catch(\Excetion $e){
                     $message = 'Supplier imported successfully. Please setup your <a href="setting/mail_setting">mail setting</a> to send mail.';
-                }   
+                }
             }
         }
-        return redirect('supplier')->with('message', $message); 
+        return redirect('supplier')->with('message', $message);
     }
 }

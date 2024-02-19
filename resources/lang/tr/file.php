@@ -1,5 +1,13 @@
-<?php 
+<?php
 return [
+    'Res ph#'     => 'Res ph#',
+    'Driver'     => 'Driver',
+    'code'     => 'Code',
+    'Advance'     => 'Advance',
+    'Office ph#'     => 'Office ph#',
+    'Time'     => 'Time',
+    'Cow'     => 'Cow',
+    'Buffalo'     => 'Buffalo',
 	"dashboard" => "gösterge paneli",
 	"language" => "Dil",
 	"revenue" => "gelir",
@@ -440,7 +448,7 @@ return [
 	"Image name must be same as product name" =>  "Resim adı ürün adıyla aynı olmalıdır",
 	"Paying Amount" => "Ödeme Tutarı",
 	"Payable Amount" => "Ödenebilir miktar",
-	"Change" => "Değişiklik",	
+	"Change" => "Değişiklik",
 	"Back" => "Geri",
 	"Role Permission" => "Rol İzni",
 	"Exclusive: Poduct price = Actual product price + Tax. Inclusive: Actual product price = Product price - Tax" => "Özel: Ürün fiyatı = Gerçek ürün fiyatı + Vergi. Kapsayıcı: Gerçek ürün fiyatı = Ürün fiyatı - Vergi.",
@@ -467,7 +475,7 @@ return [
 	"Update Payroll" => "Bordroyu Güncelle",
 	"Method" => "Yöntem",
 	"Sale Return" => "Satış İadesi",
-	"Purchase Return" => "Satın alım iadesi",	
+	"Purchase Return" => "Satın alım iadesi",
 	"Net Sale Return" => "Net Satış İadesi,",
 	"Net Purchase Return" => "Net Alım İadesi,",
 	"Attendance" => "katılım",

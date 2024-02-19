@@ -2,10 +2,10 @@
 @section('content')
 
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 @if(session()->has('message'))
-  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message') }}</div> 
+  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message') }}</div>
 @endif
 <div class="row">
   <div class="container-fluid">
@@ -18,12 +18,12 @@
 </div>
 <!-- Counts Section -->
 <section class="dashboard-counts">
-  
+
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-12">
         <div class="card">
-          
+
           <ul class="nav nav-tabs mt-2" role="tablist">
             <li class="nav-item">
               <a class="nav-link active" href="#customer-sale" role="tab" data-toggle="tab">{{trans('file.Sale')}}</a>
@@ -60,8 +60,8 @@
                     </thead>
                     <tbody>
                       @foreach($lims_sale_data as $key => $sale)
-                        <?php 
-                            $coupon = \App\Coupon::find($sale->coupon_id); 
+                        <?php
+                            $coupon = \App\Coupon::find($sale->coupon_id);
                             if($coupon)
                               $coupon_code = $coupon->code;
                             else
@@ -77,7 +77,7 @@
                             $sale_note = preg_replace('/\s+/S', " ", $sale->sale_note);
                             $staff_note = preg_replace('/\s+/S', " ", $sale->staff_note);
                         ?>
-                        
+
                       <tr data-sale='["{{date($general_setting->date_format, strtotime($sale->created_at->toDateString()))}}", "{{$sale->reference_no}}", "{{$status}}", "{{$sale->biller->name}}", "{{$sale->biller->company_name}}", "{{$sale->biller->email}}", "{{$sale->biller->phone_number}}", "{{$sale->biller->address}}", "{{$sale->biller->city}}", "{{$sale->customer->name}}", "{{$sale->customer->phone_number}}", "{{$sale->customer->address}}", "{{$sale->customer->city}}", "{{$sale->id}}", "{{$sale->total_tax}}", "{{$sale->total_discount}}", "{{$sale->total_price}}", "{{$sale->order_tax}}", "{{$sale->order_tax_rate}}", "{{$sale->order_discount}}", "{{$sale->shipping_cost}}", "{{$sale->grand_total}}", "{{$sale->paid_amount}}", "{{$sale_note}}", "{{$staff_note}}", "{{$sale->user->name}}", "{{$sale->user->email}}", "{{$sale->warehouse->name}}", "{{$coupon_code}}", "{{$sale->coupon_discount}}"]'>
                         <td>{{$key}}</td>
                         <td>{{ date($general_setting->date_format, strtotime($sale->created_at->toDateString())) }}</td>
@@ -393,7 +393,7 @@
       </div>
     </div>
 </div>
-      
+
 <script type="text/javascript">
     $(document).on("click", ".sale-view-btn", function() {
         var sale = $(this).parent().parent().data('sale');
@@ -414,7 +414,7 @@
       var divToPrint=document.getElementById('sale-details');
       var newWin=window.open('','Print-Window');
       newWin.document.open();
-      newWin.document.write('<link rel="stylesheet" href="<?php echo asset('public/vendor/bootstrap/css/bootstrap.min.css') ?>" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
+      newWin.document.write('<link rel="stylesheet" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
       newWin.document.close();
       setTimeout(function(){newWin.close();},10);
     });
@@ -423,7 +423,7 @@
       var divToPrint=document.getElementById('quotation-details');
       var newWin=window.open('','Print-Window');
       newWin.document.open();
-      newWin.document.write('<link rel="stylesheet" href="<?php echo asset('public/vendor/bootstrap/css/bootstrap.min.css') ?>" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
+      newWin.document.write('<link rel="stylesheet" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
       newWin.document.close();
       setTimeout(function(){newWin.close();},10);
     });
@@ -432,7 +432,7 @@
       var divToPrint=document.getElementById('return-details');
       var newWin=window.open('','Print-Window');
       newWin.document.open();
-      newWin.document.write('<link rel="stylesheet" href="<?php echo asset('public/vendor/bootstrap/css/bootstrap.min.css') ?>" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
+      newWin.document.write('<link rel="stylesheet" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
       newWin.document.close();
       setTimeout(function(){newWin.close();},10);
     });

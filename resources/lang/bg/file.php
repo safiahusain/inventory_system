@@ -1,5 +1,13 @@
 <?php
 return [
+    'Res ph#'     => 'Res ph#',
+    'Driver'     => 'Driver',
+    'code'     => 'Code',
+    'Advance'     => 'Advance',
+    'Office ph#'     => 'Office ph#',
+    'Time'     => 'Time',
+    'Cow'     => 'Cow',
+    'Buffalo'     => 'Buffalo',
 	"dashboard" => "табло",
 	"language" => "език",
 	"revenue" => "приходи",
@@ -585,10 +593,9 @@ return [
         "This product has different price for different warehouse" => "Този продукт има различна цена за различните складове",
         "Backup Database" => "Резервно копие на базата данни",
         "Invoice Format" => "Формат на фактура",
-        
+
         "Transaction Reference" => "Референция за транзакция",
 		];
 ?>
-		
-		
-			
+
+

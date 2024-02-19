@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Warehouse;
-use App\Brand;
-use App\Category;
-use App\Product;
 use DB;
-use App\StockCount;
 use Auth;
+use App\Brand;
+use App\Product;
+use App\Category;
+use App\Warehouse;
+use App\StockCount;
+use App\Helper\Helper;
+use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
@@ -19,16 +20,9 @@ class StockCountController extends Controller
     {
         $role = Role::find(Auth::user()->role_id);
         if( $role->hasPermissionTo('stock_count') ) {
-            $lims_warehouse_list = Warehouse::where('is_active', true)->get();
-            $lims_brand_list = Brand::where('is_active', true)->get();
-            $lims_category_list = Category::where('is_active', true)->get();
-            $general_setting = DB::table('general_settings')->latest()->first();
-            if(Auth::user()->role_id > 2 && $general_setting->staff_access == 'own')
-                $lims_stock_count_all = StockCount::orderBy('id', 'desc')->where('user_id', Auth::id())->get();
-            else
-                $lims_stock_count_all = StockCount::orderBy('id', 'desc')->get();
+            $stock  =   Helper::update_stock();
 
-            return view('stock_count.index', compact('lims_warehouse_list', 'lims_brand_list', 'lims_category_list', 'lims_stock_count_all'));
+            return view('stock_count.index', compact('stock'));
         }
         else
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
@@ -111,7 +105,7 @@ class StockCountController extends Controller
                 $product[] = $current_line[0].' ['.$current_line[1].']';
                 $expected[] = $current_line[2];
                 $product_data = Product::where('code', $current_line[1])->first();
-                
+
                 if($current_line[3]){
                     $difference[] = $temp_dif = $current_line[3] - $current_line[2];
                     $counted[] = $current_line[3];
@@ -162,7 +156,7 @@ class StockCountController extends Controller
 
                 if($temp_qty < 0){
                     $qty[] = $temp_qty * (-1);
-                    $action[] = '-';  
+                    $action[] = '-';
                 }
                 else{
                     $qty[] = $temp_qty;

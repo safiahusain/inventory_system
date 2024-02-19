@@ -11,7 +11,7 @@
     <link rel="manifest" href="<?php echo e(url('manifest.json')); ?>">
     <link rel="icon" type="image/png" href="<?php echo e(url('public/logo', $general_setting->site_logo)); ?>" />
     <!-- Bootstrap CSS-->
-    
+
 
     <link rel="stylesheet" href="<?php echo e(asset('vendor/bootstrap/css/bootstrap.min.css')); ?>">
     {{-- <link rel="stylesheet" href="<?php echo asset('public/vendor/bootstrap/css/bootstrap.min.css') ?>" type="text/css"> --}}

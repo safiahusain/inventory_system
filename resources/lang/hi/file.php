@@ -1,5 +1,13 @@
-<?php 
+<?php
 return [
+    'Res ph#'     => 'Res ph#',
+    'Driver'     => 'Driver',
+    'code'     => 'Code',
+    'Advance'     => 'Advance',
+    'Office ph#'     => 'Office ph#',
+    'Time'     => 'Time',
+    'Cow'     => 'Cow',
+    'Buffalo'     => 'Buffalo',
 	"dashboard" => "डैशबोर्ड",
 	"language" => "भाषा",
 	"revenue" => "राजस्व",
@@ -440,7 +448,7 @@ return [
 	"Image name must be same as product name" =>  "छवि का नाम उत्पाद के नाम के समान होना चाहिए",
 	"Paying Amount" => "राशि का भुगतान करना",
 	"Payable Amount" => "भुगतान योग्य राशि",
-	"Change" => "परिवर्तन",	
+	"Change" => "परिवर्तन",
 	"Back" => "वापस",
 	"Role Permission" => "भूमिका अनुमति",
 	"Exclusive: Poduct price = Actual product price + Tax. Inclusive: Actual product price = Product price - Tax" => "विशिष्ट: उत्पाद मूल्य = वास्तविक उत्पाद मूल्य + कर। समावेशी: वास्तविक उत्पाद मूल्य = उत्पाद मूल्य - कर।",
@@ -467,7 +475,7 @@ return [
 	"Update Payroll" => "पेरोल अपडेट करें",
 	"Method" => "तरीका",
 	"Sale Return" => "बिक्री वापसी",
-	"Purchase Return" => "खरीद वापसी",	
+	"Purchase Return" => "खरीद वापसी",
 	"Net Sale Return" => "शुद्ध बिक्री रिटर्न,",
 	"Net Purchase Return" => "शुद्ध खरीद रिटर्न,",
 	"Attendance" => "उपस्थिति",

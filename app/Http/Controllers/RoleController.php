@@ -22,10 +22,10 @@ class RoleController extends Controller
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
     }
 
-    
+
     public function create()
     {
-        
+
     }
 
     public function store(Request $request)

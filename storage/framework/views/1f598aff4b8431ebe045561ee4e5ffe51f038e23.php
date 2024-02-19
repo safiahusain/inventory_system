@@ -1,9 +1,9 @@
  <?php $__env->startSection('content'); ?>
 <?php if(session()->has('message')): ?>
-  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><?php echo e(session()->get('message')); ?></div> 
+  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><?php echo e(session()->get('message')); ?></div>
 <?php endif; ?>
 <?php if(session()->has('not_permitted')): ?>
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><?php echo e(session()->get('not_permitted')); ?></div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><?php echo e(session()->get('not_permitted')); ?></div>
 <?php endif; ?>
 
 <section>
@@ -28,7 +28,7 @@
             </thead>
             <tbody>
                 <?php $__currentLoopData = $lims_stock_count_all; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $stock_count): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <?php 
+                <?php
                     $warehouse = DB::table('warehouses')->find($stock_count->warehouse_id);
                     $category_name = [];
                     $brand_name = [];
@@ -163,7 +163,7 @@
                     </select>
                 </div>
             </div>
-            <div class="form-group">       
+            <div class="form-group">
               <input type="submit" value="<?php echo e(trans('file.submit')); ?>" class="btn btn-primary">
             </div>
         </div>
@@ -193,7 +193,7 @@
                 <label><?php echo e(trans('file.Note')); ?></label>
                 <textarea rows="3" name="note" class="form-control"></textarea>
             </div>
-            <div class="form-group">       
+            <div class="form-group">
                 <input type="submit" value="<?php echo e(trans('file.submit')); ?>" class="btn btn-primary">
               </div>
         </div>
@@ -312,7 +312,7 @@
             newRow.append(cols);
             newBody.append(newRow);
 
-            
+
             newRow.append(cols);
             newBody.append(newRow);*/
 
@@ -327,7 +327,7 @@
           var divToPrint=document.getElementById('stock-count-details');
           var newWin=window.open('','Print-Window');
           newWin.document.open();
-          newWin.document.write('<link rel="stylesheet" href="<?php echo asset('public/vendor/bootstrap/css/bootstrap.min.css') ?>" type="text/css"><style type="text/css">@media  print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
+          newWin.document.write('<link rel="stylesheet" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}" type="text/css"><style type="text/css">@media  print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
           newWin.document.close();
           setTimeout(function(){newWin.close();},10);
     });

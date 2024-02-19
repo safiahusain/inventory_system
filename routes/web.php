@@ -69,7 +69,7 @@ Route::group(['middleware' => ['auth', 'active']], function() {
 	Route::post('importproduct', 'ProductController@importProduct')->name('product.import');
 	Route::post('exportproduct', 'ProductController@exportProduct')->name('product.export');
 	Route::get('products/print_barcode','ProductController@printBarcode')->name('product.printBarcode');
-	
+
 	Route::get('products/lims_product_search', 'ProductController@limsProductSearch')->name('product.search');
 	Route::post('products/deletebyselection', 'ProductController@deleteBySelection');
 	Route::post('products/update', 'ProductController@updateProduct');
@@ -141,8 +141,10 @@ Route::group(['middleware' => ['auth', 'active']], function() {
 	Route::post('quotations/deletebyselection', 'QuotationController@deleteBySelection');
 	Route::resource('quotations', 'QuotationController');
 
+	Route::get('purchases/create/{id}', 'PurchaseController@createPurchase')->name('create-purchase');
 	Route::post('purchases/purchase-data', 'PurchaseController@purchaseData')->name('purchases.data');
 	Route::get('purchases/product_purchase/{id}','PurchaseController@productPurchaseData');
+	Route::get('purchases/edit/{id}','PurchaseController@edit')->name('purchase.edit');
 	Route::get('purchases/lims_product_search', 'PurchaseController@limsProductSearch')->name('product_purchase.search');
 	Route::post('purchases/add_payment', 'PurchaseController@addPayment')->name('purchase.add-payment');
 	Route::get('purchases/getpayment/{id}', 'PurchaseController@getPayment')->name('purchase.get-payment');
@@ -152,6 +154,15 @@ Route::group(['middleware' => ['auth', 'active']], function() {
 	Route::post('importpurchase', 'PurchaseController@importPurchase')->name('purchase.import');
 	Route::post('purchases/deletebyselection', 'PurchaseController@deleteBySelection');
 	Route::resource('purchases', 'PurchaseController');
+
+
+	Route::get('milk/spoilation/index', 'MilkSpoilationController@index')->name('milk-spoilation-index');
+	Route::get('milk/spoilation/create', 'MilkSpoilationController@create')->name('milk-spoilation-create');
+	Route::post('milk/spoilation/store', 'MilkSpoilationController@store')->name('milk-spoilation-store');
+	Route::get('milk/spoilation/edit/{id}', 'MilkSpoilationController@edit')->name('milk-spoilation-edit');
+	Route::post('milk/spoilation/update/{id}', 'MilkSpoilationController@update')->name('milk-spoilation-update');
+	Route::get('milk/spoilation/delete/{id}', 'MilkSpoilationController@destroy')->name('milk-spoilation-destroy');
+	Route::get('milk/spoilation/stock/{param}', 'MilkSpoilationController@getStock')->name('get-stock');
 
 	Route::get('transfers/product_transfer/{id}','TransferController@productTransferData');
 	Route::get('transfers/transfer_by_csv', 'TransferController@transferByCsv');

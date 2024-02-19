@@ -1,28 +1,28 @@
 @extends('layout.main') @section('content')
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 @if(session()->has('message'))
-  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message') !!}</div> 
+  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message') !!}</div>
 @endif
 <section>
     <div class="container-fluid">
         @if(in_array("suppliers-add", $all_permission))
         <a href="{{route('supplier.create')}}" class="btn btn-info"><i class="dripicons-plus"></i> {{trans('file.Add Supplier')}}</a>
-        <a href="#" data-toggle="modal" data-target="#importSupplier" class="btn btn-primary"><i class="dripicons-copy"></i> {{trans('file.Import Supplier')}}</a>
+        {{-- <a href="#" data-toggle="modal" data-target="#importSupplier" class="btn btn-primary"><i class="dripicons-copy"></i> {{trans('file.Import Supplier')}}</a> --}}
         @endif
     </div>
     <div class="table-responsive">
-        <table id="supplier-table" class="table">
+        <table id="supplier-table" class="table" style="cursor: pointer;">
             <thead>
                 <tr>
                     <th class="not-exported"></th>
-                    <th>{{trans('file.Image')}}</th>
-                    <th>{{trans('file.name')}}</th>
-                    <th>{{trans('file.Company Name')}}</th>
-                    <th>{{trans('file.VAT Number')}}</th>
-                    <th>{{trans('file.Email')}}</th>
+                    <th>{{trans('file.Code')}}</th>
+                    <th>{{trans('file.Driver')}} {{trans('file.name')}}</th>
                     <th>{{trans('file.Phone Number')}}</th>
+                    <th>{{trans('file.Res Ph#')}}</th>
+                    <th>{{trans('file.Office ph#')}}</th>
+                    <th>{{trans('file.City')}}</th>
                     <th>{{trans('file.Address')}}</th>
                     <th class="not-exported">{{trans('file.action')}}</th>
                 </tr>
@@ -31,43 +31,19 @@
                 @foreach($lims_supplier_all as $key=>$supplier)
                 <tr data-id="{{$supplier->id}}">
                     <td>{{$key}}</td>
-                    @if($supplier->image)
-                    <td> <img src="{{url('public/images/supplier',$supplier->image)}}" height="80" width="80">
-                    </td>
-                    @else
-                    <td>No Image</td>
-                    @endif
+                    <td>{{ $supplier->code}}</td>
                     <td>{{ $supplier->name }}</td>
-                    <td>{{ $supplier->company_name}}</td>
-                    <td>{{ $supplier->vat_number}}</td>
-                    <td>{{ $supplier->email}}</td>
                     <td>{{ $supplier->phone_number}}</td>
+                    <td>{{ $supplier->res_phone}}</td>
+                    <td>{{ $supplier->office_phone}}</td>
+                    <td>{{ $supplier->city}}</td>
                     <td>{{ $supplier->address}}
-                            @if($supplier->city){{ ', '.$supplier->city}}@endif
-                            @if($supplier->state){{ ', '.$supplier->state}}@endif
-                            @if($supplier->postal_code){{ ', '.$supplier->postal_code}}@endif
-                            @if($supplier->country){{ ', '.$supplier->country}}@endif</td>
                     <td>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{trans('file.action')}}
-                                <span class="caret"></span>
-                                <span class="sr-only">Toggle Dropdown</span>
-                            </button>
-                            <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default" user="menu">
-                                @if(in_array("suppliers-edit", $all_permission))
-                                <li>
-                                	<a href="{{ route('supplier.edit', $supplier->id) }}" class="btn btn-link"><i class="dripicons-document-edit"></i> {{trans('file.edit')}}</a>
-                                </li>
-                                @endif
-                                <li class="divider"></li>
-                                @if(in_array("suppliers-delete", $all_permission))
-                                {{ Form::open(['route' => ['supplier.destroy', $supplier->id], 'method' => 'DELETE'] ) }}
-                                <li>
-                                    <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="dripicons-trash"></i> {{trans('file.delete')}}</button>
-                                </li>
-                                {{ Form::close() }}
-                                @endif
-                            </ul>
+                            <a href="{{ route('supplier.edit', $supplier->id) }}" class="btn btn-link"><i class="dripicons-document-edit"></i></a>
+                            {{ Form::open(['route' => ['supplier.destroy', $supplier->id], 'method' => 'DELETE'] ) }}
+                                <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="dripicons-trash"></i></button>
+                            {{ Form::close() }}
                         </div>
                     </td>
                 </tr>
@@ -119,7 +95,7 @@
     var all_permission = <?php echo json_encode($all_permission) ?>;
     var supplier_id = [];
     var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
-    
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -199,7 +175,7 @@
                         body: function ( data, row, column, node ) {
                             if (column === 0 && (data.indexOf('<img src=') !== -1)) {
                                 var regex = /<img.*?src=['"](.*?)['"]/;
-                                data = regex.exec(data)[1];                 
+                                data = regex.exec(data)[1];
                             }
                             return data;
                         }
@@ -257,5 +233,20 @@
     if(all_permission.indexOf("suppliers-delete") == -1)
         $('.buttons-delete').addClass('d-none');
 
+    document.getElementById('supplier-table').addEventListener('click', function (event)
+    {
+        if (event.target.tagName === 'TD')
+        {
+            if (!event.target.classList.contains('action-column'))
+            {
+                // var rowIndex = event.target.parentElement.rowIndex;
+                var dataId  =   event.target.parentElement.getAttribute('data-id');
+                var route   =   "{{ route('create-purchase', ':id') }}";
+                route       =   route.replace(':id', dataId);
+
+                window.location.href = route;
+            }
+        }
+    });
 </script>
 @endsection

@@ -25,7 +25,7 @@ class CustomerController extends Controller
                 $all_permission[] = $permission->name;
             if(empty($all_permission))
                 $all_permission[] = 'dummy text';
-            $lims_customer_all = Customer::where('is_active', true)->get();
+            $lims_customer_all = Customer::where('is_active', true)->latest()->get();
             return view('customer.index', compact('lims_customer_all', 'all_permission'));
         }
         else
@@ -46,73 +46,39 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'phone_number' => [
-                'max:255',
-                    Rule::unique('customers')->where(function ($query) {
-                    return $query->where('is_active', 1);
-                }),
-            ],
+            'code'          =>  'required',
+            'name'          =>  'required',
+            'phone_number'  =>  'required',
+            'address'       =>  'required',
+            'city'          =>  'required',
         ]);
-        $lims_customer_data = $request->all();
-        $lims_customer_data['is_active'] = true;
-        //creating user if given user access
-        if(isset($lims_customer_data['user'])) {
-            $this->validate($request, [
-                'name' => [
-                    'max:255',
-                        Rule::unique('users')->where(function ($query) {
-                        return $query->where('is_deleted', false);
-                    }),
-                ],
-                'email' => [
-                    'email',
-                    'max:255',
-                        Rule::unique('users')->where(function ($query) {
-                        return $query->where('is_deleted', false);
-                    }),
-                ],
-            ]);
 
-            $lims_customer_data['phone'] = $lims_customer_data['phone_number'];
-            $lims_customer_data['role_id'] = 5;
-            $lims_customer_data['is_deleted'] = false;
-            $lims_customer_data['password'] = bcrypt($lims_customer_data['password']);
-            $user = User::create($lims_customer_data);
-            $lims_customer_data['user_id'] = $user->id;
-            $message = 'Customer and user created successfully';
-        }
-        else {
+        $message = 'Something went wrong while creating Customer';
+
+        $created    =   Customer::create([
+            'code'          =>  $request->code,
+            'name'          =>  $request->name,
+            'phone_number'  =>  $request->phone_number,
+            'address'       =>  $request->city,
+            'city'          =>  $request->address,
+            'is_active'     =>  $request->status == 1   ?   true    :   false,
+        ]);
+
+        if($created)
+        {
             $message = 'Customer created successfully';
         }
-        
-        $lims_customer_data['name'] = $lims_customer_data['customer_name'];
-        
-        if($lims_customer_data['email']) {
-            try{
-                Mail::send( 'mail.customer_create', $lims_customer_data, function( $message ) use ($lims_customer_data)
-                {
-                    $message->to( $lims_customer_data['email'] )->subject( 'New Customer' );
-                });
-            }
-            catch(\Exception $e){
-                $message = 'Customer created successfully. Please setup your <a href="setting/mail_setting">mail setting</a> to send mail.';
-            }   
-        }
 
-        Customer::create($lims_customer_data);
-        if($lims_customer_data['pos'])
-            return redirect('pos')->with('message', $message);
-        else
-            return redirect('customer')->with('create_message', $message);
+        return redirect('customer')->with('create_message', $message);
     }
 
     public function edit($id)
     {
         $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('customers-edit')){
+        if($role->hasPermissionTo('customers-edit'))
+        {
             $lims_customer_data = Customer::find($id);
-            $lims_customer_group_all = CustomerGroup::where('is_active',true)->get();
-            return view('customer.edit', compact('lims_customer_data','lims_customer_group_all'));
+            return view('customer.edit', compact('lims_customer_data'));
         }
         else
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
@@ -121,49 +87,35 @@ class CustomerController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'phone_number' => [
-                'max:255',
-                    Rule::unique('customers')->ignore($id)->where(function ($query) {
-                    return $query->where('is_active', 1);
-                }),
-            ],
+            'code'          =>  'required',
+            'name'          =>  'required',
+            'phone_number'  =>  'required',
+            'address'       =>  'required',
+            'city'          =>  'required',
         ]);
 
-        $input = $request->all();
-        $lims_customer_data = Customer::find($id);
+        $lims_customer_data =   Customer::where('id', $id)->first();
+        $message            =   'Customer not found';
 
-        if(isset($input['user'])) {
-            $this->validate($request, [
-                'name' => [
-                    'max:255',
-                        Rule::unique('users')->where(function ($query) {
-                        return $query->where('is_deleted', false);
-                    }),
-                ],
-                'email' => [
-                    'email',
-                    'max:255',
-                        Rule::unique('users')->where(function ($query) {
-                        return $query->where('is_deleted', false);
-                    }),
-                ],
+        if($lims_customer_data)
+        {
+            $updated    =   $lims_customer_data->update([
+                'code'          =>  $request->code,
+                'name'          =>  $request->name,
+                'phone_number'  =>  $request->phone_number,
+                'address'       =>  $request->address,
+                'city'          =>  $request->city,
+                'is_active'     =>  $request->status == 1   ?   true    :   false,
             ]);
 
-            $input['phone'] = $input['phone_number'];
-            $input['role_id'] = 5;
-            $input['is_active'] = true;
-            $input['is_deleted'] = false;
-            $input['password'] = bcrypt($input['password']);
-            $user = User::create($input);
-            $input['user_id'] = $user->id;
-            $message = 'Customer updated and user created successfully';
+            $message = 'Something went wrong while updating Customer';
+
+            if($updated)
+            {
+                $message = 'Customer updated successfully';
+            }
         }
-        else {
-            $message = 'Customer updated successfully';
-        }
-        
-        $input['name'] = $input['customer_name'];
-        $lims_customer_data->update($input);
+
         return redirect('customer')->with('edit_message', $message);
     }
 

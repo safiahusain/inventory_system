@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Helper\Helper;
 use App\Product;
 use App\ProductPurchase;
 use App\Product_Sale;
@@ -228,7 +229,7 @@ class ReportController extends Controller
     }
 
     public function dailyPurchaseByWarehouse(Request $request, $year, $month)
-    {        
+    {
         $data = $request->all();
         if($data['warehouse_id'] == 0)
             return redirect()->back();
@@ -363,7 +364,7 @@ class ReportController extends Controller
                     'SUM(grand_total) AS grand_total'
                 );
                 $purchase_data = Purchase::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->selectRaw(implode(',', $query1))->get();
-                
+
                 $total_discount[] = number_format((float)$purchase_data[0]->total_discount, 2, '.', '');
                 $order_discount[] = number_format((float)$purchase_data[0]->order_discount, 2, '.', '');
                 $total_tax[] = number_format((float)$purchase_data[0]->total_tax, 2, '.', '');
@@ -402,7 +403,7 @@ class ReportController extends Controller
                 'SUM(grand_total) AS grand_total'
             );
             $purchase_data = Purchase::where('warehouse_id', $data['warehouse_id'])->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->selectRaw(implode(',', $query1))->get();
-            
+
             $total_discount[] = number_format((float)$purchase_data[0]->total_discount, 2, '.', '');
             $order_discount[] = number_format((float)$purchase_data[0]->order_discount, 2, '.', '');
             $total_tax[] = number_format((float)$purchase_data[0]->total_tax, 2, '.', '');
@@ -422,7 +423,7 @@ class ReportController extends Controller
         if($role->hasPermissionTo('best-seller')){
             $start = strtotime(date("Y-m", strtotime("-2 months")).'-01');
             $end = strtotime(date("Y").'-'.date("m").'-31');
-            
+
             while($start <= $end)
             {
                 $start_date = date("Y-m", $start).'-'.'01';
@@ -465,7 +466,7 @@ class ReportController extends Controller
 
             $best_selling_qty = DB::table('sales')
                                 ->join('product_sales', 'sales.id', '=', 'product_sales.sale_id')->select(DB::raw('product_sales.product_id, sum(product_sales.qty) as sold_qty'))->where('sales.warehouse_id', $data['warehouse_id'])->whereDate('sales.created_at', '>=' , $start_date)->whereDate('sales.created_at', '<=' , $end_date)->groupBy('product_id')->orderBy('sold_qty', 'desc')->take(1)->get();
-                                
+
             if(!count($best_selling_qty)) {
                 $product[] = '';
                 $sold_qty[] = 0;
@@ -533,7 +534,7 @@ class ReportController extends Controller
             $product_cost += $purchased_amount;
             $product_tax += $purchased_tax;
         }
-        
+
         $purchase = Purchase::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->selectRaw(implode(',', $query1))->get();
         $total_purchase = Purchase::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->count();
         $sale = Sale::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->selectRaw(implode(',', $query1))->get();
@@ -633,7 +634,7 @@ class ReportController extends Controller
         $product_name = [];
         $product_qty = [];
 
-        $columns = array( 
+        $columns = array(
             1 => 'name'
         );
 
@@ -670,9 +671,9 @@ class ReportController extends Controller
                                 ->get();
         }
 
-        $totalFiltered = $totalData; 
+        $totalFiltered = $totalData;
         $data = [];
-        foreach ($lims_product_all as $product) {           
+        foreach ($lims_product_all as $product) {
             $variant_id_all = [];
             if($warehouse_id == 0) {
                 if($product->is_variant) {
@@ -1093,7 +1094,7 @@ class ReportController extends Controller
                             }
                         }
                         $nestedData['purchase_returned_qty'] = $purchase_returned_qty;
-                        
+
                         if($nestedData['purchased_qty'] > 0)
                             $nestedData['profit'] = $nestedData['sold_amount'] - (($nestedData['purchased_amount'] / $nestedData['purchased_qty']) * $nestedData['sold_qty']);
                         else
@@ -1284,7 +1285,7 @@ class ReportController extends Controller
                         $nestedData['in_stock'] = 0;
 
                     $nestedData['profit'] = number_format((float)$nestedData['profit'], 2, '.', '');
-                    
+
                     $data[] = $nestedData;
                 }
             }
@@ -1292,164 +1293,200 @@ class ReportController extends Controller
         /*$totalData = count($data);
         $totalFiltered = $totalData;*/
         $json_data = array(
-            "draw"            => intval($request->input('draw')),  
-            "recordsTotal"    => intval($totalData),  
-            "recordsFiltered" => intval($totalFiltered), 
-            "data"            => $data   
+            "draw"            => intval($request->input('draw')),
+            "recordsTotal"    => intval($totalData),
+            "recordsFiltered" => intval($totalFiltered),
+            "data"            => $data
         );
-            
+
         echo json_encode($json_data);
     }
 
     public function purchaseReport(Request $request)
     {
-    	$data = $request->all();
-        $start_date = $data['start_date'];
-        $end_date = $data['end_date'];
-        $warehouse_id = $data['warehouse_id'];
-        $product_id = [];
-        $variant_id = [];
-        $product_name = [];
-        $product_qty = [];
-        $lims_product_all = Product::select('id', 'name', 'qty', 'is_variant')->where('is_active', true)->get();
-        foreach ($lims_product_all as $product) {
-            $lims_product_purchase_data = null;
-            $variant_id_all = [];
-            if($warehouse_id == 0) {
-                if($product->is_variant)
-                    $variant_id_all = ProductPurchase::distinct('variant_id')->where('product_id', $product->id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->pluck('variant_id');
-                else
-                    $lims_product_purchase_data = ProductPurchase::where('product_id', $product->id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->first();
-            }
-            else {
-                if($product->is_variant)
-                    $variant_id_all = DB::table('purchases')
-                        ->join('product_purchases', 'purchases.id', '=', 'product_purchases.purchase_id')
-                        ->distinct('variant_id')
-                        ->where([
-                            ['product_purchases.product_id', $product->id],
-                            ['purchases.warehouse_id', $warehouse_id]
-                        ])->whereDate('purchases.created_at','>=', $start_date)
-                          ->whereDate('purchases.created_at','<=', $end_date)
-                          ->pluck('variant_id');
-                else
-                    $lims_product_purchase_data = DB::table('purchases')
-                        ->join('product_purchases', 'purchases.id', '=', 'product_purchases.purchase_id')->where([
-                                ['product_purchases.product_id', $product->id],
-                                ['purchases.warehouse_id', $warehouse_id]
-                        ])->whereDate('purchases.created_at','>=', $start_date)
-                          ->whereDate('purchases.created_at','<=', $end_date)
-                          ->first();
-            }
+        $data           =   $request->all();
+        $start_date     =   $data['start_date'];
+        $end_date       =   $data['end_date'];
+        $supplier_id    =   $data['supplier_id'];
+        $cow_stock      =   0;
+        $buffalo_stock  =   0;
+        $wanda_stock    =   0;
+        $purchase_array =   [];
 
-            if($lims_product_purchase_data) {
-                $product_name[] = $product->name;
-                $product_id[] = $product->id;
-                $variant_id[] = null;
-                if($warehouse_id == 0)
-                    $product_qty[] = $product->qty;
-                else
-                    $product_qty[] = Product_Warehouse::where([
-                                    ['product_id', $product->id],
-                                    ['warehouse_id', $warehouse_id]
-                                ])->sum('qty');
-            }
-            elseif(count($variant_id_all)) {
-                foreach ($variant_id_all as $key => $variantId) {
-                    $variant_data = Variant::find($variantId);
-                    $product_name[] = $product->name.' ['.$variant_data->name.']';
-                    $product_id[] = $product->id;
-                    $variant_id[] = $variant_data->id;
-                    if($warehouse_id == 0)
-                        $product_qty[] = ProductVariant::FindExactProduct($product->id, $variant_data->id)->first()->qty;
-                    else
-                        $product_qty[] = Product_Warehouse::where([
-                                        ['product_id', $product->id],
-                                        ['variant_id', $variant_data->id],
-                                        ['warehouse_id', $warehouse_id]
-                                    ])->first()->qty;
-                    
+        if($supplier_id !=  0)
+        {
+            $lims_purchase_all  =   Purchase::where('supplier_id',$supplier_id)
+                                ->whereDate('created_at','>=', $start_date)
+                                ->whereDate('created_at','<=', $end_date)->get();
+        }
+        else
+        {
+            $lims_purchase_all  =   Purchase::whereDate('created_at','>=', $start_date)
+                                ->whereDate('created_at','<=', $end_date)->get();
+        }
+
+        if(count($lims_purchase_all) >  0)
+        {
+            $purchase_cow_qty       =   0;
+            $purchase_buffalo_qty   =   0;
+            $purchase_wanda_qty     =   0;
+            $purchase_cow_amount    =   0;
+            $purchase_buffalo_amount=   0;
+            $purchase_wanda_amount  =   0;
+
+            foreach ($lims_purchase_all as $key => $value)
+            {
+                $data   =   $value->data    ?   json_decode($value->data)  :   null;
+
+                if($data)
+                {
+                    foreach ($data as $d_key => $d_value)
+                    {
+                        if($d_value->status)
+                        {
+                            $qty_data   =   $d_value->qty;
+                            $qty        =   0;
+                            $amount     =   0;
+                            $amount     =   $d_value->amount;
+
+                            if($d_key   !=  'wanda')
+                            {
+                                $m_qty      =   $qty_data->m_qty    ?   $qty_data->m_qty    :   0;
+                                $e_qty      =   $qty_data->e_qty    ?   $qty_data->e_qty    :   0;
+                                $qty        =   $m_qty  +   $e_qty;
+
+                                if($d_key   ==  'cow')
+                                {
+                                    $purchase_cow_qty       +=  $qty;
+                                    $purchase_cow_amount    +=  $amount;
+                                }
+                                else
+                                {
+                                    $purchase_buffalo_qty       +=  $qty;
+                                    $purchase_buffalo_amount    +=  $amount;
+                                }
+                            }
+                            else
+                            {
+                                $qty                    =   $qty_data;
+                                $purchase_wanda_qty     +=  $qty;
+                                $purchase_wanda_amount  +=  $amount;
+                            }
+                        }
+                    }
                 }
             }
+
+            $purchase_array  +=  [
+                'cow'       =>  [
+                    'qty'      =>  $purchase_cow_qty,
+                    'amount'   =>  $purchase_cow_amount,
+                ],
+                'buffalo'   =>  [
+                    'qty'      =>  $purchase_buffalo_qty,
+                    'amount'   =>  $purchase_buffalo_amount,
+                ],
+                'wanda'     =>  [
+                    'qty'      =>  $purchase_wanda_qty,
+                    'amount'   =>  $purchase_wanda_amount,
+                ],
+            ];
         }
-        $lims_warehouse_list = Warehouse::where('is_active', true)->get();
-        return view('report.purchase_report',compact('product_id', 'variant_id', 'product_name', 'product_qty', 'start_date', 'end_date', 'lims_warehouse_list', 'warehouse_id'));
+
+        $stock          =   Helper::update_stock();
+        $suppliers      =   Supplier::get();
+
+        return view('report.purchase_report',compact('suppliers', 'stock', 'purchase_array', 'start_date', 'end_date', 'supplier_id'));
     }
 
     public function saleReport(Request $request)
     {
-    	$data = $request->all();
-        $start_date = $data['start_date'];
-        $end_date = $data['end_date'];
-        $warehouse_id = $data['warehouse_id'];
-        $product_id = [];
-        $variant_id = [];
-        $product_name = [];
-        $product_qty = [];
-        $lims_product_all = Product::select('id', 'name', 'qty', 'is_variant')->where('is_active', true)->get();
-        
-        foreach ($lims_product_all as $product) {
-            $lims_product_sale_data = null;
-            $variant_id_all = [];
-            if($warehouse_id == 0){
-                if($product->is_variant)
-                    $variant_id_all = Product_Sale::distinct('variant_id')->where('product_id', $product->id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->pluck('variant_id');
-                else
-                    $lims_product_sale_data = Product_Sale::where('product_id', $product->id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->first();
-            }
-            else {
-                if($product->is_variant)
-                    $variant_id_all = DB::table('sales')
-                        ->join('product_sales', 'sales.id', '=', 'product_sales.sale_id')
-                        ->distinct('variant_id')
-                        ->where([
-                            ['product_sales.product_id', $product->id],
-                            ['sales.warehouse_id', $warehouse_id]
-                        ])->whereDate('sales.created_at','>=', $start_date)
-                          ->whereDate('sales.created_at','<=', $end_date)
-                          ->pluck('variant_id');
-                else
-                    $lims_product_sale_data = DB::table('sales')
-                            ->join('product_sales', 'sales.id', '=', 'product_sales.sale_id')->where([
-                                    ['product_sales.product_id', $product->id],
-                                    ['sales.warehouse_id', $warehouse_id]
-                            ])->whereDate('sales.created_at','>=', $start_date)
-                              ->whereDate('sales.created_at','<=', $end_date)
-                              ->first();
-            }
-            if($lims_product_sale_data) {
-                $product_name[] = $product->name;
-                $product_id[] = $product->id;
-                $variant_id[] = null;
-                if($warehouse_id == 0)
-                    $product_qty[] = $product->qty;
-                else {
-                    $product_qty[] = Product_Warehouse::where([
-                                    ['product_id', $product->id],
-                                    ['warehouse_id', $warehouse_id]
-                                ])->sum('qty');
-                }
-            }
-            elseif(count($variant_id_all)) {
-                foreach ($variant_id_all as $key => $variantId) {
-                    $variant_data = Variant::find($variantId);
-                    $product_name[] = $product->name.' ['.$variant_data->name.']';
-                    $product_id[] = $product->id;
-                    $variant_id[] = $variant_data->id;
-                    if($warehouse_id == 0)
-                        $product_qty[] = ProductVariant::FindExactProduct($product->id, $variant_data->id)->first()->qty;
-                    else
-                        $product_qty[] = Product_Warehouse::where([
-                                        ['product_id', $product->id],
-                                        ['variant_id', $variant_data->id],
-                                        ['warehouse_id', $warehouse_id]
-                                    ])->first()->qty;
-                    
-                }
-            }
+        $data           =   $request->all();
+        $start_date     =   $data['start_date'];
+        $end_date       =   $data['end_date'];
+        $customer_id    =   $data['customer_id'];
+        $cow_stock      =   0;
+        $buffalo_stock  =   0;
+        $wanda_stock    =   0;
+        $sale_array     =   [];
+
+        if($customer_id !=  0)
+        {
+            $lims_sale_all  =   Sale::where('customer_id',$customer_id)
+                                ->whereDate('created_at','>=', $start_date)
+                                ->whereDate('created_at','<=', $end_date)->get();
         }
-        $lims_warehouse_list = Warehouse::where('is_active', true)->get();
-        return view('report.sale_report',compact('product_id', 'variant_id', 'product_name', 'product_qty', 'start_date', 'end_date', 'lims_warehouse_list','warehouse_id'));
+        else
+        {
+            $lims_sale_all  =   Sale::whereDate('created_at','>=', $start_date)
+                                ->whereDate('created_at','<=', $end_date)->get();
+        }
+
+        if(count($lims_sale_all) >  0)
+        {
+            $sale_cow_qty       =   0;
+            $sale_buffalo_qty   =   0;
+            $sale_wanda_qty     =   0;
+            $sale_cow_amount    =   0;
+            $sale_buffalo_amount=   0;
+            $sale_wanda_amount  =   0;
+
+            foreach ($lims_sale_all as $key => $value)
+            {
+                $data   =   $value->data    ?   json_decode($value->data)  :   null;
+
+                if($data)
+                {
+                    foreach ($data as $d_key => $d_value)
+                    {
+                        $qty_data   =   $d_value->qty;
+                        $qty        =   0;
+                        $amount     =   0;
+                        $m_qty      =   $qty_data->m_qty    ?   $qty_data->m_qty    :   0;
+                        $e_qty      =   $qty_data->e_qty    ?   $qty_data->e_qty    :   0;
+                        $qty        =   $m_qty  +   $e_qty;
+                        $amount     =   $d_value->amount;
+
+
+                        if($d_key   ==  'cow')
+                        {
+                            $sale_cow_qty       +=  $qty;
+                            $sale_cow_amount    +=  $amount;
+                        }
+                        else if($d_key   ==  'buffalo')
+                        {
+                            $sale_buffalo_qty   +=  $qty;
+                            $sale_buffalo_amount+=  $amount;
+                        }
+                        else
+                        {
+                            $sale_wanda_qty     +=  $qty;
+                            $sale_wanda_amount  +=  $amount;
+                        }
+                    }
+                }
+            }
+
+            $sale_array  +=  [
+                'cow'       =>  [
+                    'qty'      =>  $sale_cow_qty,
+                    'amount'   =>  $sale_cow_amount,
+                ],
+                'buffalo'   =>  [
+                    'qty'      =>  $sale_buffalo_qty,
+                    'amount'   =>  $sale_buffalo_amount,
+                ],
+                'wanda'     =>  [
+                    'qty'      =>  $sale_wanda_qty,
+                    'amount'   =>  $sale_wanda_amount,
+                ],
+            ];
+        }
+
+        $stock          =   Helper::update_stock();
+        $customers      =   Customer::get();
+        // dd($request->all(),$lims_sale_all);
+        return view('report.sale_report',compact('sale_array', 'stock', 'start_date', 'end_date', 'customer_id', 'customers'));
     }
 
     public function paymentReportByDate(Request $request)
@@ -1457,7 +1494,7 @@ class ReportController extends Controller
         $data = $request->all();
         $start_date = $data['start_date'];
         $end_date = $data['end_date'];
-        
+
         $lims_payment_data = Payment::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->get();
         return view('report.payment_report',compact('lims_payment_data', 'start_date', 'end_date'));
     }
@@ -1508,9 +1545,9 @@ class ReportController extends Controller
         $lims_product_transfer_data = [];
 
         $lims_sale_data = Sale::with('customer', 'warehouse')->where('user_id', $user_id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->orderBy('created_at', 'desc')->get();
-        $lims_purchase_data = Purchase::with('warehouse')->where('user_id', $user_id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->orderBy('created_at', 'desc')->get();        
+        $lims_purchase_data = Purchase::with('warehouse')->where('user_id', $user_id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->orderBy('created_at', 'desc')->get();
         $lims_quotation_data = Quotation::with('customer', 'warehouse')->where('user_id', $user_id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->orderBy('created_at', 'desc')->get();
-        $lims_transfer_data = Transfer::with('fromWarehouse', 'toWarehouse')->where('user_id', $user_id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->orderBy('created_at', 'desc')->get();        
+        $lims_transfer_data = Transfer::with('fromWarehouse', 'toWarehouse')->where('user_id', $user_id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->orderBy('created_at', 'desc')->get();
         $lims_payment_data = DB::table('payments')
                            ->where('user_id', $user_id)
                            ->whereDate('payments.created_at', '>=' , $start_date)
@@ -1539,72 +1576,26 @@ class ReportController extends Controller
 
     public function customerReport(Request $request)
     {
-    	$data = $request->all();
-        $customer_id = $data['customer_id'];
-        $start_date = $data['start_date'];
-        $end_date = $data['end_date'];
-        $lims_sale_data = Sale::with('warehouse')->where('customer_id', $customer_id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->orderBy('created_at', 'desc')->get();
-        $lims_quotation_data = Quotation::with('warehouse')->where('customer_id', $customer_id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->orderBy('created_at', 'desc')->get();
-        $lims_return_data = Returns::with('warehouse', 'biller')->where('customer_id', $customer_id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->orderBy('created_at', 'desc')->get();
-        $lims_payment_data = DB::table('payments')
-                           ->join('sales', 'payments.sale_id', '=', 'sales.id')
-                           ->where('customer_id', $customer_id)
-                           ->whereDate('payments.created_at', '>=' , $start_date)
-                           ->whereDate('payments.created_at', '<=' , $end_date)
-                           ->select('payments.*', 'sales.reference_no as sale_reference')
-                           ->orderBy('payments.created_at', 'desc')
-                           ->get();
+    	$data               =   $request->all();
+        $customer_id        =   $data['customer_id'];
+        $start_date         =   $data['start_date'];
+        $end_date           =   $data['end_date'];
+        $lims_sale_data     =   Sale::where('customer_id', $customer_id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->orderBy('created_at', 'desc')->get();
+        $lims_customer_list =   Customer::where('is_active', true)->get();
 
-        $lims_product_sale_data = [];
-        $lims_product_quotation_data = [];
-        $lims_product_return_data = [];
-
-        foreach ($lims_sale_data as $key => $sale) {
-            $lims_product_sale_data[$key] = Product_Sale::where('sale_id', $sale->id)->get();
-        }
-        foreach ($lims_quotation_data as $key => $quotation) {
-            $lims_product_quotation_data[$key] = ProductQuotation::where('quotation_id', $quotation->id)->get();
-        }
-        foreach ($lims_return_data as $key => $return) {
-            $lims_product_return_data[$key] = ProductReturn::where('return_id', $return->id)->get();
-        }
-        $lims_customer_list = Customer::where('is_active', true)->get();
-        return view('report.customer_report', compact('lims_sale_data','customer_id', 'start_date', 'end_date', 'lims_product_sale_data', 'lims_payment_data', 'lims_customer_list', 'lims_quotation_data', 'lims_product_quotation_data', 'lims_return_data', 'lims_product_return_data'));
+        return view('report.customer_report', compact('lims_sale_data','lims_customer_list', 'customer_id', 'start_date', 'end_date'));
     }
 
     public function supplierReport(Request $request)
     {
-        $data = $request->all();
-        $supplier_id = $data['supplier_id'];
-        $start_date = $data['start_date'];
-        $end_date = $data['end_date'];
-        $lims_purchase_data = Purchase::with('warehouse')->where('supplier_id', $supplier_id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->orderBy('created_at', 'desc')->get();
-        $lims_quotation_data = Quotation::with('warehouse', 'customer')->where('supplier_id', $supplier_id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->orderBy('created_at', 'desc')->get();
-        $lims_return_data = ReturnPurchase::with('warehouse')->where('supplier_id', $supplier_id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->orderBy('created_at', 'desc')->get();
-        $lims_payment_data = DB::table('payments')
-                           ->join('purchases', 'payments.purchase_id', '=', 'purchases.id')
-                           ->where('supplier_id', $supplier_id)
-                           ->whereDate('payments.created_at', '>=' , $start_date)
-                           ->whereDate('payments.created_at', '<=' , $end_date)
-                           ->select('payments.*', 'purchases.reference_no as purchase_reference')
-                           ->orderBy('payments.created_at', 'desc')
-                           ->get();
+        $data               =   $request->all();
+        $supplier_id        =   $data['supplier_id'];
+        $start_date         =   $data['start_date'];
+        $end_date           =   $data['end_date'];
+        $lims_purchase_data =   Purchase::where('supplier_id', $supplier_id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->orderBy('created_at', 'desc')->get();
+        $lims_supplier_list =   Supplier::where('is_active', true)->get();
 
-        $lims_product_purchase_data = [];
-        $lims_product_quotation_data = [];
-        $lims_product_return_data = [];
-
-        foreach ($lims_purchase_data as $key => $purchase) {
-            $lims_product_purchase_data[$key] = ProductPurchase::where('purchase_id', $purchase->id)->get();
-        }
-        foreach ($lims_return_data as $key => $return) {
-            $lims_product_return_data[$key] = PurchaseProductReturn::where('return_id', $return->id)->get();
-        }
-        foreach ($lims_quotation_data as $key => $quotation) {
-            $lims_product_quotation_data[$key] = ProductQuotation::where('quotation_id', $quotation->id)->get();
-        }
-        $lims_supplier_list = Supplier::where('is_active', true)->get();
-        return view('report.supplier_report', compact('lims_purchase_data', 'lims_product_purchase_data', 'lims_payment_data', 'supplier_id', 'start_date', 'end_date', 'lims_supplier_list', 'lims_quotation_data', 'lims_product_quotation_data', 'lims_return_data', 'lims_product_return_data'));
+        return view('report.supplier_report', compact('lims_purchase_data', 'supplier_id', 'start_date', 'end_date', 'lims_supplier_list'));
     }
 
     public function dueReportByDate(Request $request)

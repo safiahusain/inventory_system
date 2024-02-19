@@ -20,7 +20,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('public/css/app.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="<?php echo asset('public/css/custom.css') ?>" type="text/css">
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}" type="text/css">
 </head>
 <body>
     <div id="app">
@@ -76,6 +76,6 @@
 </body>
 </html>
 <script type="text/javascript">
-    
+
 
 </script>

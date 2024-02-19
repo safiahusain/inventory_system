@@ -8,10 +8,10 @@
     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ $errors->first('image') }}</div>
 @endif
 @if(session()->has('message'))
-  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message') }}</div> 
+  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message') }}</div>
 @endif
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 
 <section>
@@ -34,7 +34,7 @@
                 <tr data-id="{{$brand->id}}">
                     <td>{{$key}}</td>
                     @if($brand->image)
-                    <td> <img src="{{url('public/images/brand',$brand->image)}}" height="80" width="80">
+                    <td> <img src="{{asset('images/brand/',$brand->image)}}" height="80" width="80">
                     </td>
                     @else
                     <td>No Image</td>
@@ -81,8 +81,8 @@
             <div class="form-group">
                 <label>{{trans('file.Image')}}</label>
                 {{Form::file('image', array('class' => 'form-control'))}}
-            </div>                
-            <div class="form-group">       
+            </div>
+            <div class="form-group">
               <input type="submit" value="{{trans('file.submit')}}" class="btn btn-primary">
             </div>
         </div>
@@ -143,7 +143,7 @@
             <label>{{trans('file.Image')}}</label>
             {{Form::file('image', array('class' => 'form-control'))}}
         </div>
-        <div class="form-group">       
+        <div class="form-group">
             <input type="submit" value="{{trans('file.submit')}}" class="btn btn-primary">
           </div>
         </div>
@@ -161,7 +161,7 @@
 
     var brand_id = [];
     var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
-    
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -171,7 +171,7 @@
     $( "#select_all" ).on( "change", function() {
         if ($(this).is(':checked')) {
             $("tbody input[type='checkbox']").prop('checked', true);
-        } 
+        }
         else {
             $("tbody input[type='checkbox']").prop('checked', false);
         }
@@ -285,7 +285,7 @@
                         body: function ( data, row, column, node ) {
                             if (column === 0 && (data.indexOf('<img src=') !== -1)) {
                                 var regex = /<img.*?src=['"](.*?)['"]/;
-                                data = regex.exec(data)[1];                 
+                                data = regex.exec(data)[1];
                             }
                             return data;
                         }

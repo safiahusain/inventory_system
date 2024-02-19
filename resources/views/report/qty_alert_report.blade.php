@@ -24,8 +24,8 @@
                     <?php
                         $images = explode(",", $product->image);
                         $product->base_image = $images[0];
-                    ?> 
-                        <img src="{{url('public/images/product',$product->base_image)}}" height="80" width="80">
+                    ?>
+                        <img src="{{asset('images/product/',$product->base_image)}}" height="80" width="80">
                     </td>
                     <td>{{$product->name}}</td>
                     <td>{{$product->code}}</td>

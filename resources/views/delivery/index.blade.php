@@ -1,9 +1,9 @@
 @extends('layout.main') @section('content')
 @if(session()->has('message'))
-  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message') !!}</div> 
+  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message') !!}</div>
 @endif
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 
 <section>
@@ -22,7 +22,7 @@
             </thead>
             <tbody>
                 @foreach($lims_delivery_all as $key=>$delivery)
-                <?php 
+                <?php
                     $customer_sale = DB::table('sales')->join('customers', 'sales.customer_id', '=', 'customers.id')->where('sales.id', $delivery->sale_id)->select('sales.reference_no','customers.name')->get();
 
                     if($delivery->status == 1)
@@ -31,7 +31,7 @@
                         $status = trans('file.Delivering');
                     else
                         $status = trans('file.Delivered');
-                    
+
                     $barcode = \DNS2D::getBarcodePNG($delivery->reference_no, 'QRCODE');
                 ?>
                 <tr class="delivery-link" data-barcode="{{$barcode}}" data-delivery='["{{date($general_setting->date_format, strtotime($delivery->created_at->toDateString()))}}", "{{$delivery->reference_no}}", "{{$delivery->sale->reference_no}}", "{{$status}}", "{{$delivery->id}}", "{{$delivery->sale->customer->name}}", "{{$delivery->sale->customer->phone_number}}", "{{$delivery->sale->customer->address}}", "{{$delivery->sale->customer->city}}", "{{$delivery->note}}", "{{$delivery->user->name}}", "{{$delivery->delivered_by}}", "{{$delivery->recieved_by}}"]'>
@@ -60,7 +60,7 @@
                                 <li class="divider"></li>
                                 {{ Form::open(['route' => ['delivery.delete', $delivery->id], 'method' => 'post'] ) }}
                                 <li>
-                                  <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="dripicons-trash"></i> {{trans('file.delete')}}</button> 
+                                  <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="dripicons-trash"></i> {{trans('file.delete')}}</button>
                                 </li>
                                 {{ Form::close() }}
                             </ul>
@@ -89,7 +89,7 @@
                 </div>
                 <div class="col-md-6">
                     <h3 id="exampleModalLabel" class="modal-title text-center container-fluid">
-                        <img src="{{url('public/logo', $general_setting->site_logo)}}" width="30">
+                        <img src="{{asset('logo/', $general_setting->site_logo)}}" width="30">
                         {{$general_setting->site_title}}
                     </h3>
                 </div>
@@ -117,8 +117,8 @@
                 </tbody>
             </table>
             <div id="delivery-footer" class="row">
-            </div>            
-        </div>    
+            </div>
+        </div>
       </div>
     </div>
 </div>
@@ -191,7 +191,7 @@
 
     var delivery_id = [];
     var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
-    
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -202,7 +202,7 @@
           var divToPrint=document.getElementById('delivery-details');
           var newWin=window.open('','Print-Window');
           newWin.document.open();
-          newWin.document.write('<link rel="stylesheet" href="<?php echo asset('public/vendor/bootstrap/css/bootstrap.min.css') ?>" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
+          newWin.document.write('<link rel="stylesheet" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
           newWin.document.close();
           setTimeout(function(){newWin.close();},10);
     });
@@ -268,10 +268,10 @@
 
     $(document).ready(function() {
         $('.open-EditCategoryDialog').on('click', function(){
-          var url ="delivery/"  
+          var url ="delivery/"
           var id = $(this).data('id').toString();
           url = url.concat(id).concat("/edit");
-          
+
           $.get(url, function(data){
                 $('#dr').text(data[0]);
                 $('#sr').text(data[1]);

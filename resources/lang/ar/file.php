@@ -1,5 +1,13 @@
-<?php 
+<?php
 return [
+    'Res ph#'     => 'Res ph#',
+    'Driver'     => 'Driver',
+    'code'     => 'Code',
+    'Advance'     => 'Advance',
+    'Office ph#'     => 'Office ph#',
+    'Time'     => 'Time',
+    'Cow'     => 'Cow',
+    'Buffalo'     => 'Buffalo',
 	"dashboard" => "لوحة القيادة",
 	"language" => "لغة",
 	"revenue" => "إيرادات",
@@ -441,7 +449,7 @@ return [
 	"Paying Amount" => "دفع المبلغ",
 	"Payable Amount" => "المبلغ المستحق",
 	"Change" => "يتغيرون",
-	"Back" => "الى الخلف",	
+	"Back" => "الى الخلف",
 	"Role Permission" => "إذن الدور",
 	"Exclusive: Poduct price = Actual product price + Tax. Inclusive: Actual product price = Product price - Tax" => "حصريًا: سعر المنتج = سعر المنتج الفعلي + الضريبة. شامل: سعر المنتج الفعلي = سعر المنتج - الضريبة.",
 	"Accounting" => "محاسبة",
@@ -585,6 +593,6 @@ return [
 	"System Logo" => "شعار النظام",
 	"This product has different price for different warehouse" => "هذا المنتج له سعر مختلف لمستودعات مختلفة",
 	"Backup Database" => "قاعدة بيانات النسخ الاحتياطي",
-	
+
 ];
 ?>
