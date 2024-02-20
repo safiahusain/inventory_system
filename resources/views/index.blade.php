@@ -89,10 +89,10 @@
     </div>
 </div> -->
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 @if(session()->has('message'))
-  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message') }}</div> 
+  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message') }}</div>
 @endif
       <div class="row">
         <div class="container-fluid">
@@ -100,12 +100,12 @@
             <div class="brand-text float-left mt-4">
                 <h3>{{trans('file.welcome')}} <span>{{Auth::user()->name}}</span> </h3>
             </div>
-            <div class="filter-toggle btn-group">
+            {{-- <div class="filter-toggle btn-group">
               <button class="btn btn-secondary date-btn" data-start_date="{{date('Y-m-d')}}" data-end_date="{{date('Y-m-d')}}">{{trans('file.Today')}}</button>
               <button class="btn btn-secondary date-btn" data-start_date="{{date('Y-m-d', strtotime(' -7 day'))}}" data-end_date="{{date('Y-m-d')}}">{{trans('file.Last 7 Days')}}</button>
               <button class="btn btn-secondary date-btn active" data-start_date="{{date('Y').'-'.date('m').'-'.'01'}}" data-end_date="{{date('Y-m-d')}}">{{trans('file.This Month')}}</button>
               <button class="btn btn-secondary date-btn" data-start_date="{{date('Y').'-01'.'-01'}}" data-end_date="{{date('Y').'-12'.'-31'}}">{{trans('file.This Year')}}</button>
-            </div>
+            </div> --}}
           </div>
         </div>
       </div>
@@ -119,7 +119,7 @@
                 <div class="col-sm-3">
                   <div class="wrapper count-title text-center">
                     <div class="icon"><i class="dripicons-graph-bar" style="color: #733686"></i></div>
-                    <div class="name"><strong style="color: #733686">{{ trans('file.revenue') }}</strong></div>
+                    <div class="name"><strong style="color: #733686">{{ trans('file.Milk Spoilation') }}</strong></div>
                     <div class="count-number revenue-data">{{number_format((float)$revenue, 2, '.', '')}}</div>
                   </div>
                 </div>
@@ -127,15 +127,15 @@
                 <div class="col-sm-3">
                   <div class="wrapper count-title text-center">
                     <div class="icon"><i class="dripicons-return" style="color: #ff8952"></i></div>
-                    <div class="name"><strong style="color: #ff8952">{{trans('file.Sale Return')}}</strong></div>
-                    <div class="count-number return-data">{{number_format((float)$return, 2, '.', '')}}</div>
+                    <div class="name"><strong style="color: #ff8952">{{trans('file.Sale')}}</strong></div>
+                    <div class="count-number return-data">{{number_format((float)$sales, 2, '.', '')}}</div>
                   </div>
                 </div>
                 <!-- Count item widget-->
                 <div class="col-sm-3">
                   <div class="wrapper count-title text-center">
                     <div class="icon"><i class="dripicons-media-loop" style="color: #00c689"></i></div>
-                    <div class="name"><strong style="color: #00c689">{{trans('file.Purchase Return')}}</strong></div>
+                    <div class="name"><strong style="color: #00c689">{{trans('file.Purchase')}}</strong></div>
                     <div class="count-number purchase_return-data">{{number_format((float)$purchase_return, 2, '.', '')}}</div>
                   </div>
                 </div>
@@ -143,7 +143,7 @@
                 <div class="col-sm-3">
                   <div class="wrapper count-title text-center">
                     <div class="icon"><i class="dripicons-trophy" style="color: #297ff9"></i></div>
-                    <div class="name"><strong style="color: #297ff9">{{trans('file.profit')}}</strong></div>
+                    <div class="name"><strong style="color: #297ff9">{{trans('file.profit/loss')}}</strong></div>
                     <div class="count-number profit-data">{{number_format((float)$profit, 2, '.', '')}}</div>
                   </div>
                 </div>
@@ -189,7 +189,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="container-fluid">
           <div class="row">
             <div class="col-md-12">
@@ -314,7 +314,7 @@
                             @foreach($recent_quotation as $quotation)
                             <?php $customer = DB::table('customers')->find($quotation->customer_id); ?>
                             <tr>
-                              <td>{{date($general_setting->date_format, strtotime($quotation->created_at->toDateString())) }}</td>
+                              {{-- <td>{{date($general_setting->date_format, strtotime($quotation->created_at->toDateString())) }}</td>
                               <td>{{$quotation->reference_no}}</td>
                               <td>{{$customer->name}}</td>
                               @if($quotation->quotation_status == 1)
@@ -322,7 +322,7 @@
                               @else
                               <td><div class="badge badge-success">Sent</div></td>
                               @endif
-                              <td>{{$quotation->grand_total}}</td>
+                              <td>{{$quotation->grand_total}}</td> --}}
                             </tr>
                             @endforeach
                           </tbody>
@@ -452,7 +452,7 @@
           </div>
         </div>
       </section>
-      
+
 <script type="text/javascript">
     // Show and hide color-switcher
     $(".color-switcher .switcher-button").on('click', function() {

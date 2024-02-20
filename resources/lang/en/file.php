@@ -1,5 +1,6 @@
 <?php
 return [
+    'profit/loss'   =>  'Profit / Loss',
     'item'   =>  'Item',
     'unit'   =>  'Unit',
     'stock'   =>  'Stock',
