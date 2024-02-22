@@ -22,7 +22,7 @@
                                                         <label>{{trans('file.Invoice')}}</label>
                                                     </div>
                                                     <div class="col-9">
-                                                        <input type="text" name="invoice_id" value="{{$milk_spoilation->invoice}}" required class="form-control" >
+                                                        <input type="text" name="invoice_id" value="{{$milk_spoilation->invoice}}" readonly class="form-control" >
                                                     </div>
                                                 </div>
                                             </div>
@@ -110,7 +110,7 @@
                                                                     <!-- ********************product id************************************* -->
                                                                     <td>
                                                                         <input class="form-control combine num_only_integer_quantity code vertical"
-                                                                            type="text"  name="code[]" tabIndex="-1" value="{{$data_value->code}}" required style="width:100px;"/>
+                                                                            type="text"  name="code[]" tabIndex="-1" value="{{$data_value->code}}" readonly style="width:100px;"/>
                                                                     </td>
                                                                     <td>
                                                                         <input class="form-control combine num_only_integer_quantity product vertical"
@@ -125,6 +125,7 @@
                                                                             type="text"  name="total_quantity[]" tabIndex="-1" value="{{$value}}" readonly style="width:100px;"/>
                                                                     </td>
                                                                     <td style="padding-right: 3px">
+                                                                        <input class="form-control combine num_only_integer_quantity quantity vertical" id="quantity" type="hidden" value="{{$data_value->qty}}">
                                                                         <input class="form-control combine num_only_integer_quantity qty vertical"
                                                                         type="text"  name="quantity[]" tabIndex="-1" value="{{$data_value->qty}}" onkeyup="calc(this)" required style="width:100px;"/>
                                                                         <span class="qty_message"></span>
@@ -185,10 +186,13 @@
         var quantity    =   document.getElementsByClassName("qty")[index].value;
         var price       =   document.getElementsByClassName("milk_rate")[index].value;
         let stock       =   document.getElementsByClassName("total_quantity")[index].value;
-        quantity        =   parseInt(quantity) || 0;
-        stock           =   parseInt(stock);
+        let prev_stock  =   document.getElementsByClassName("quantity")[index].value;
+        quantity        =   parseFloat(quantity) || 0;
+        stock           =   parseFloat(stock) || 0;
+        prev_stock      =   parseFloat(prev_stock) || 0;
+        let total_stock =   prev_stock + stock;
 
-        if(quantity>stock)
+        if(quantity>total_stock)
         {
             $(".qty_message").eq(index).show();
             $(".qty_message").eq(index).text("Qty must be less than Total Quantity");
@@ -227,24 +231,21 @@
 
     $(function()
     {
-        $('#reservation').daterangepicker({
-            "autoapply"      : true,
-            "linkedCalendars": false,
-            "dateLimit" : {
-                'months': 1,
-                'days'  : -1
-            },
-            locale          :   {
-                cancelLabel :   'Clear'
+        $('#reservation').daterangepicker(
+        {
+            "autoapply"         : true,
+            "linkedCalendars"   : false,
+            "showDropdowns"     : false,  // Disable month and year dropdowns
+            "showCustomRange"   : false,   // Disable custom range option
+            "locale"            : {
+                cancelLabel : 'Clear'
             }
         },
-        function()
+        function(start, end, label)
         {
-            $('#reservation').on('apply.daterangepicker', function(ev, picker)
-            {
-                $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
-            });
+            $('#reservation').val(start.format('MM/DD/YYYY') + ' - ' + end.format('MM/DD/YYYY'));
         });
+
         $('.drp-calendar.right').hide();
         $('.drp-calendar.left').addClass('single');
     });

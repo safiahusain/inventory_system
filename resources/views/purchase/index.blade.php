@@ -13,25 +13,55 @@
         @endif
     </div>
     <div class="table-responsive">
-        <table id="purchases-table" class="table" style="cursor: pointer;">
+        <table id="purchases-table" class="table">
             <thead>
                 <tr>
                     <th class="not-exported"></th>
                     <th>{{trans('file.Date')}}</th>
                     <th>{{trans('file.Supplier')}}</th>
-                    <th>{{trans('file.Grand Total')}}</th>
-                    <th>{{trans('file.Total Qty')}}</th>
+                    <th>{{trans('file.Product Rate')}}</th>
+                    <th>{{trans('file.product Qty')}}</th>
                     <th class="not-exported">{{trans('file.action')}}</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($purchases as $key=>$purchase)
+                @foreach($purchases as $key => $purchase)
                 <tr data-id="{{$purchase->id}}">
                     <td>{{$key}}</td>
                     <td>{{ $purchase->created_at}}</td>
-                    <td>{{ $purchase->supplier->name ?   $purchase->supplier->name   :   ''}}</td>
-                    <td>{{ $purchase->grand_total}}</td>
-                    <td>{{ $purchase->total_qty}}</td>
+                    <td>{{ $purchase->supplier ?   $purchase->supplier->name   :   ''}}</td>
+                    @php
+                        $data   =   $purchase->data ?   json_decode($purchase->data)    :   null;
+                    @endphp
+                    <td>
+                        @foreach($data as $data_key =>  $value)
+                            @php
+                                $total_amount  =   $value->amount;
+                            @endphp
+                            {{$data_key.' ('.$total_amount.')'}}
+                            <br>
+                        @endforeach
+                    </td>
+                    <td>
+                        @foreach($data as $data_key =>  $value)
+                            @php
+                                $qty    =   $value->qty;
+
+                                if($data_key    !=  'wanda')
+                                {
+                                    $m_qty      =   $qty->m_qty;
+                                    $e_qty      =   $qty->e_qty;
+                                    $total_qty  =   $m_qty + $e_qty;
+                                }
+                                else
+                                {
+                                    $total_qty  =   $qty;
+                                }
+                            @endphp
+                            {{$data_key.' ('.$total_qty.')'}}
+                            <br>
+                        @endforeach
+                    </td>
                     <td>
                         <div class="btn-group">
                             <a href="{{ route('purchases.edit', $purchase->id) }}" class="btn btn-link"><i class="dripicons-document-edit"></i></a>
@@ -186,37 +216,6 @@
                 },
             },
             {
-                text: '{{trans("file.delete")}}',
-                className: 'buttons-delete',
-                action: function ( e, dt, node, config ) {
-                    if(user_verified == '1') {
-                        supplier_id.length = 0;
-                        $(':checkbox:checked').each(function(i){
-                            if(i){
-                                supplier_id[i-1] = $(this).closest('tr').data('id');
-                            }
-                        });
-                        if(supplier_id.length && confirm("Are you sure want to delete?")) {
-                            $.ajax({
-                                type:'POST',
-                                url:'purchases/deletebyselection',
-                                data:{
-                                    supplierIdArray: supplier_id
-                                },
-                                success:function(data){
-                                    alert(data);
-                                }
-                            });
-                            dt.rows({ page: 'current', selected: true }).remove().draw(false);
-                        }
-                        else if(!supplier_id.length)
-                            alert('No purchases is selected!');
-                    }
-                    else
-                        alert('This feature is disable for demo!');
-                }
-            },
-            {
                 extend: 'colvis',
                 text: '{{trans("file.Column visibility")}}',
                 columns: ':gt(0)'
@@ -227,20 +226,5 @@
     if(all_permission.indexOf("suppliers-delete") == -1)
         $('.buttons-delete').addClass('d-none');
 
-    document.getElementById('purchases-table').addEventListener('click', function (event)
-    {
-        if (event.target.tagName === 'TD')
-        {
-            if (!event.target.classList.contains('action-column'))
-            {
-                // var rowIndex = event.target.parentElement.rowIndex;
-                var dataId  =   event.target.parentElement.getAttribute('data-id');
-                var route   =   "{{ route('create-purchase', ':id') }}";
-                route       =   route.replace(':id', dataId);
-
-                window.location.href = route;
-            }
-        }
-    });
 </script>
 @endsection

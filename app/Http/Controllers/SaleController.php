@@ -363,15 +363,15 @@ class SaleController extends Controller
             // dd($m_qty,$request->$m_qty,$default_products);
             $products      +=   [
                 $key    =>  [
-                    'milk_rate'         =>  $request->$milk_rate        ?   $request->$milk_rate        :   null,
-                    'pk_default_value'  =>  $request->$pk_default_value ?   $request->$pk_default_value :   null,
-                    'pk_enter_value'    =>  $request->$pk_enter_value   ?   $request->$pk_enter_value   :   null,
-                    'pk_amount'         =>  $request->$pk_amount        ?   $request->$pk_amount        :   null,
+                    'milk_rate'         =>  $request->$milk_rate        ?   $request->$milk_rate        :   0,
+                    'pk_default_value'  =>  $request->$pk_default_value ?   $request->$pk_default_value :   0,
+                    'pk_enter_value'    =>  $request->$pk_enter_value   ?   $request->$pk_enter_value   :   0,
+                    'pk_amount'         =>  $request->$pk_amount        ?   $request->$pk_amount        :   0,
                     'qty'               =>  [
-                        'm_qty'  =>  $request->$m_qty   ?   $request->$m_qty   :   null,
-                        'e_qty'  =>  $request->$e_qty   ?   $request->$e_qty   :   null,
+                        'm_qty'  =>  $request->$m_qty   ?   $request->$m_qty   :   0,
+                        'e_qty'  =>  $request->$e_qty   ?   $request->$e_qty   :   0,
                     ],
-                    'amount'            =>  $request->$amount   ?   $request->$amount   :   null,
+                    'amount'            =>  $request->$amount   ?   $request->$amount   :   0,
                 ]
             ];
 
@@ -1196,15 +1196,15 @@ class SaleController extends Controller
                 // dd($m_qty,$request->$m_qty,$default_products);
                 $products      +=   [
                     $key    =>  [
-                        'milk_rate'         =>  $request->$milk_rate        ?   $request->$milk_rate        :   null,
-                        'pk_default_value'  =>  $request->$pk_default_value ?   $request->$pk_default_value :   null,
-                        'pk_enter_value'    =>  $request->$pk_enter_value   ?   $request->$pk_enter_value   :   null,
-                        'pk_amount'         =>  $request->$pk_amount        ?   $request->$pk_amount        :   null,
+                        'milk_rate'         =>  $request->$milk_rate        ?   $request->$milk_rate        :   0,
+                        'pk_default_value'  =>  $request->$pk_default_value ?   $request->$pk_default_value :   0,
+                        'pk_enter_value'    =>  $request->$pk_enter_value   ?   $request->$pk_enter_value   :   0,
+                        'pk_amount'         =>  $request->$pk_amount        ?   $request->$pk_amount        :   0,
                         'qty'               =>  [
-                            'm_qty'  =>  $request->$m_qty   ?   $request->$m_qty   :   null,
-                            'e_qty'  =>  $request->$e_qty   ?   $request->$e_qty   :   null,
+                            'm_qty'  =>  $request->$m_qty   ?   $request->$m_qty   :   0,
+                            'e_qty'  =>  $request->$e_qty   ?   $request->$e_qty   :   0,
                         ],
-                        'amount'            =>  $request->$amount   ?   $request->$amount   :   null,
+                        'amount'            =>  $request->$amount   ?   $request->$amount   :   0,
                     ]
                 ];
 

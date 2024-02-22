@@ -245,10 +245,12 @@ class HomeController extends Controller
         }
         //return $month;
 
-        $revenue    =   MilkSpoilation::sum('total_amount');
-        $sales      =   Sale::sum('grand_total');
-        $purchase   =   Purchase::sum('grand_total');
-        $expense    =   $sales-$purchase-$revenue;
+        $revenue        =   MilkSpoilation::sum('total_amount');
+        $sales          =   Sale::sum('grand_total');
+        $purchase_return=   Purchase::sum('grand_total');
+        $expense        =   Purchase::sum('grand_total');
+        $profit         =   $sales-$purchase_return-$revenue;
+        $profit         =   $profit < 0 ? 0 : $profit;
 
         return view('index', compact('revenue', 'sales', 'purchase', 'expense', 'return', 'purchase_return', 'profit', 'payment_recieved', 'payment_sent', 'month', 'yearly_sale_amount', 'yearly_purchase_amount', 'recent_sale', 'recent_purchase', 'recent_quotation', 'recent_payment', 'best_selling_qty', 'yearly_best_selling_qty', 'yearly_best_selling_price'));
     }

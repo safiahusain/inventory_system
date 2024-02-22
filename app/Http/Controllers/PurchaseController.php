@@ -32,7 +32,9 @@ class PurchaseController extends Controller
     public function index(Request $request)
     {
         $role = Role::find(Auth::user()->role_id);
+
         if($role->hasPermissionTo('purchases-index')) {
+
             if($request->input('warehouse_id'))
                 $warehouse_id = $request->input('warehouse_id');
             else
@@ -55,7 +57,7 @@ class PurchaseController extends Controller
             $lims_pos_setting_data = PosSetting::latest()->first();
             $lims_warehouse_list = Warehouse::where('is_active', true)->get();
             $lims_account_list = Account::where('is_active', true)->get();
-            return view('purchase.index', compact( 'lims_account_list', 'lims_warehouse_list', 'all_permission', 'lims_pos_setting_data', 'warehouse_id', 'starting_date', 'ending_date', 'purchases'));
+            return view('purchase.index', compact('lims_account_list', 'lims_warehouse_list', 'all_permission', 'lims_pos_setting_data', 'warehouse_id', 'starting_date', 'ending_date', 'purchases'));
         }
         else
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
@@ -347,8 +349,6 @@ class PurchaseController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->except('document');
-
         $data['user_id'] = Auth::id();
 
         $supplier       =   Supplier::where('id',$request->supplier_id)->first();
@@ -357,11 +357,11 @@ class PurchaseController extends Controller
         $total_qty     =   0;
         $total_Amount  =   0;
 
-        if(!$request->cow.'-m_qty' && !$request->cow.'-e_qty' && !$request->buffalo.'-m_qty' && !$request->buffalo.'-e_qty' && !$request->qty)
-        {
-            $message = 'Quantity field required';
-            return redirect()->back()->with('message', $message);
-        }
+        // if(!$request->cow.'-m_qty' && !$request->cow.'-e_qty' && !$request->buffalo.'-m_qty' && !$request->buffalo.'-e_qty' && !$request->qty)
+        // {
+        //     $message = 'Quantity field required';
+        //     return redirect()->back()->with('message', $message);
+        // }
 
         $default_products   =   config('default.data');
 
@@ -390,10 +390,10 @@ class PurchaseController extends Controller
                     'qty'       =>  $key == 'wanda'
                                     ?   $request->qty
                                     :   [
-                        'm_qty'  =>  $request->$m_qty   ?   $request->$m_qty   :   null,
-                        'e_qty'  =>  $request->$e_qty   ?   $request->$e_qty   :   null,
+                        'm_qty'  =>  $request->$m_qty   ?   $request->$m_qty   :   0,
+                        'e_qty'  =>  $request->$e_qty   ?   $request->$e_qty   :   0,
                     ],
-                    'amount'    =>  $request->$amount   ?   $request->$amount   :   null,
+                    'amount'    =>  $request->$amount   ?   $request->$amount   :   0,
                 ]
             ];
 
@@ -685,10 +685,10 @@ class PurchaseController extends Controller
                         'qty'       =>  $key == 'wanda'
                                         ?   $request->qty
                                         :   [
-                            'm_qty'  =>  $request->$m_qty   ?   $request->$m_qty   :   null,
-                            'e_qty'  =>  $request->$e_qty   ?   $request->$e_qty   :   null,
+                            'm_qty'  =>  $request->$m_qty   ?   $request->$m_qty   :   0,
+                            'e_qty'  =>  $request->$e_qty   ?   $request->$e_qty   :   0,
                         ],
-                        'amount'    =>  $request->$amount   ?   $request->$amount   :   null,
+                        'amount'    =>  $request->$amount   ?   $request->$amount  :   0,
                     ]
                 ];
 

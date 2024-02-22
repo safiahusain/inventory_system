@@ -31,7 +31,7 @@
                     <td>{{$key}}</td>
                     <td>{{ $milk_spoilation->created_at}}</td>
                     <td>{{ $milk_spoilation->invoice}}</td>
-                    <td>{{ $milk_spoilation->supplier->name ?   $milk_spoilation->supplier->name   :   ''}}</td>
+                    <td>{{ $milk_spoilation->supplier ?   $milk_spoilation->supplier->name   :   ''}}</td>
                     <td>{{ $milk_spoilation->description}}</td>
                     <td>{{ $milk_spoilation->date}}</td>
                     <td>
@@ -153,37 +153,6 @@
                     rows: ':visible',
                     stripHtml: false
                 },
-            },
-            {
-                text: '{{trans("file.delete")}}',
-                className: 'buttons-delete',
-                action: function ( e, dt, node, config ) {
-                    if(user_verified == '1') {
-                        supplier_id.length = 0;
-                        $(':checkbox:checked').each(function(i){
-                            if(i){
-                                supplier_id[i-1] = $(this).closest('tr').data('id');
-                            }
-                        });
-                        if(supplier_id.length && confirm("Are you sure want to delete?")) {
-                            $.ajax({
-                                type:'POST',
-                                url:'milk-spoilation/deletebyselection',
-                                data:{
-                                    supplierIdArray: supplier_id
-                                },
-                                success:function(data){
-                                    alert(data);
-                                }
-                            });
-                            dt.rows({ page: 'current', selected: true }).remove().draw(false);
-                        }
-                        else if(!supplier_id.length)
-                            alert('No milk-spoilation is selected!');
-                    }
-                    else
-                        alert('This feature is disable for demo!');
-                }
             },
             {
                 extend: 'colvis',

@@ -199,60 +199,98 @@ class Helper
         return  ($stock);
     }
 
-    // public static function update_wallet_customer($user,$currency,$amount,$type,$transaction,$tx_type,$is_pending)
-    // {
-    //     try
-    //     {
-    //         $currency           =   strtolower($is_pending  ?   $currency."_pending"    :   $currency);
-    //         $wallet             =   CustomerWallet::where('customer_id',$user->id)->first();
-    //         $previous_balance   =   $wallet->$currency;
-    //         $update_data        =   [
-    //             $currency   =>  $wallet->$currency + $amount
-    //         ];
+    public static function get_avg_amount()
+    {
+        try
+        {
+            $purchase           =   Purchase::get();
+            $purchase_array     =   [];
+            $amount_array       =   [];
 
-    //         if($type    ==  'decrement')
-    //         {
-    //             $update_data    =   [
-    //                 $currency   =>  $wallet->$currency - $amount
-    //             ];
-    //         }
+            if(count($purchase) >  0)
+            {
+                $purchase_cow_qty        =   0;
+                $purchase_cow_amount     =   0;
+                $purchase_buffalo_qty    =   0;
+                $purchase_buffalo_amount =   0;
+                $purchase_wanda_qty      =   0;
+                $purchase_wanda_amount   =   0;
 
-    //         $updated            =   $wallet->update($update_data);
-    //         $new_balance        =   $wallet->$currency;
+                foreach ($purchase as $key => $value)
+                {
+                    $data   =   $value->data    ?   json_decode($value->data)  :   null;
 
-    //         if ($updated)
-    //         {
-    //             unset($transaction->data);
-    //             $created    =   CustomerWalletHistory::create([
-    //                 'customer_id'   =>  $user->id,
-    //                 'wallet_id'     =>  $wallet->id,
-    //                 'ref_id'        =>  $transaction->id,
-    //                 'order_id'      =>  (in_array($tx_type,['deposit','share']))    &&  isset($transaction->order_id)
-    //                                     ?   $transaction->order_id
-    //                                     :   null,
-    //                 'currency'      =>  $currency,
-    //                 'amount'        =>  $amount,
-    //                 'previous'      =>  $previous_balance,
-    //                 'current'       =>  $new_balance,
-    //                 'type'          =>  $type,
-    //                 'tx_type'       =>  $tx_type,
-    //                 'data'          =>  json_encode($transaction)
-    //             ]);
-    //         }
-    //     }
-    //     catch (\Throwable $th)
-    //     {
-    //         Log::critical([
-    //             "message"       =>  "Wallet Update Error",
-    //             'Error'         =>  $th->getMessage(),
-    //             'line_number'   =>  $th->getLine()
-    //         ]);
+                    if($data)
+                    {
+                        foreach ($data as $d_key => $d_value)
+                        {
+                            if($d_value->status)
+                            {
+                                $qty_data   =   $d_value->qty;
+                                $qty        =   0;
 
-    //         $updated = false;
-    //         $created = false;
-    //     }
+                                if($d_key   !=  'wanda')
+                                {
+                                    $m_qty      =   $qty_data->m_qty    ?   $qty_data->m_qty    :   0;
+                                    $e_qty      =   $qty_data->e_qty    ?   $qty_data->e_qty    :   0;
+                                    $qty        =   $m_qty  +   $e_qty;
 
-    //     return  $updated && $created;
-    // }
+                                    if($d_key   ==  'cow')
+                                    {
+                                        $purchase_cow_qty   +=  $qty;
+                                        $purchase_cow_amount+=  $d_value->amount;
+                                    }
+                                    else
+                                    {
+                                        $purchase_buffalo_qty   +=  $qty;
+                                        $purchase_buffalo_amount+=  $d_value->amount;
+                                    }
+                                }
+                                else
+                                {
+                                    $qty                    =   $qty_data;
+                                    $purchase_wanda_qty     +=  $qty;
+                                    $purchase_wanda_amount  +=  $d_value->amount;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                $purchase_array  +=  [
+                    'cow'       =>  [
+                        'qty'   =>  $purchase_cow_qty,
+                        'amount'=>  $purchase_cow_amount,
+                    ],
+                    'buffalo'       =>  [
+                        'qty'   =>  $purchase_buffalo_qty,
+                        'amount'=>  $purchase_buffalo_amount,
+                    ],
+                    'wanda'       =>  [
+                        'qty'   =>  $purchase_wanda_qty,
+                        'amount'=>  $purchase_wanda_amount,
+                    ]
+                ];
+            }
+
+            foreach($purchase_array as $key => $value)
+            {
+                $average_amount =   $value['amount'] / $value['qty'];
+                $amount_array   +=   [
+                    $key    =>  $average_amount,
+                ];
+            }
+        }
+        catch (\Throwable $th)
+        {
+            Log::critical([
+                'message'       =>  'error in get average amount',
+                'error'         =>  $th->getMessage(),
+                "line_number"   =>  $th->getLine(),
+            ]);
+        }
+
+        return  ($amount_array);
+    }
 }
 ?>

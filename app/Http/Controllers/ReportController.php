@@ -1307,7 +1307,7 @@ class ReportController extends Controller
         $data           =   $request->all();
         $start_date     =   $data['start_date'];
         $end_date       =   $data['end_date'];
-        $supplier_id    =   $data['supplier_id'];
+        $supplier_id    =   $data['warehouse_id'];
         $cow_stock      =   0;
         $buffalo_stock  =   0;
         $wanda_stock    =   0;
@@ -1404,7 +1404,7 @@ class ReportController extends Controller
         $data           =   $request->all();
         $start_date     =   $data['start_date'];
         $end_date       =   $data['end_date'];
-        $customer_id    =   $data['customer_id'];
+        $customer_id    =   $data['warehouse_id'];
         $cow_stock      =   0;
         $buffalo_stock  =   0;
         $wanda_stock    =   0;

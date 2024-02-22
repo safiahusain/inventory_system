@@ -29,7 +29,6 @@
                     <th>{{trans('file.Phone Number')}}</th>
                     <th>{{trans('file.Address')}}</th>
                     <th>{{trans('file.city')}}</th>
-                    <th>{{trans('file.Balance')}}</th>
                     <th class="not-exported">{{trans('file.action')}}</th>
                 </tr>
             </thead>
@@ -42,7 +41,6 @@
                     <td>{{ $customer->phone_number}}</td>
                     <td>{{ $customer->address }}</td>
                     <td>{{ $customer->city }}</td>
-                    <td>{{ number_format($customer->deposit - $customer->expense, 2) }}</td>
                     <td>
                         <div class="btn-group">
                             {{-- <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{trans('file.action')}}
@@ -268,7 +266,7 @@
         'columnDefs': [
             {
                 "orderable": false,
-                'targets': [0, 7]
+                'targets': [0, 6]
             },
             {
                 'render': function(data, type, row, meta){
@@ -293,7 +291,7 @@
                 extend: 'pdf',
                 text: '{{trans("file.PDF")}}',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5, 6],
+                    columns: [0, 1, 2, 3, 4, 5],
                     rows: ':visible'
                 },
             },
@@ -301,7 +299,7 @@
                 extend: 'csv',
                 text: '{{trans("file.CSV")}}',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5, 6],
+                    columns: [0, 1, 2, 3, 4, 5],
                     rows: ':visible'
                 },
             },
@@ -309,40 +307,9 @@
                 extend: 'print',
                 text: '{{trans("file.Print")}}',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 5, 6],
+                    columns: [0, 1, 2, 3, 4, 5],
                     rows: ':visible'
                 },
-            },
-            {
-                text: '{{trans("file.delete")}}',
-                className: 'buttons-delete',
-                action: function ( e, dt, node, config ) {
-                    if(user_verified == '1') {
-                        customer_id.length = 0;
-                        $(':checkbox:checked').each(function(i){
-                            if(i){
-                                customer_id[i-1] = $(this).closest('tr').data('id');
-                            }
-                        });
-                        if(customer_id.length && confirm("Are you sure want to delete?")) {
-                            $.ajax({
-                                type:'POST',
-                                url:'customer/deletebyselection',
-                                data:{
-                                    customerIdArray: customer_id
-                                },
-                                success:function(data){
-                                    alert(data);
-                                }
-                            });
-                            dt.rows({ page: 'current', selected: true }).remove().draw(false);
-                        }
-                        else if(!customer_id.length)
-                            alert('No customer is selected!');
-                    }
-                    else
-                        alert('This feature is disable for demo!');
-                }
             },
             {
                 extend: 'colvis',

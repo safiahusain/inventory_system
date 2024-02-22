@@ -11,7 +11,6 @@
                         <h4>{{trans('file.Milk Spoilation')}}</h4>
                     </div>
                     <div class="card-body">
-                        <p class="italic"><small>{{trans('file.The field labels marked with * are required input fields')}}.</small></p>
                         {!! Form::open(['route' => 'milk-spoilation-store', 'method' => 'post', 'files' => true, 'id' => 'milk-spoilation-form']) !!}
                             <div class="row">
                                 <div class="col-12">
@@ -23,7 +22,7 @@
                                                         <label>{{trans('file.Invoice')}}</label>
                                                     </div>
                                                     <div class="col-9">
-                                                        <input type="text" name="invoice_id" value="" required class="form-control" >
+                                                        <input type="text" name="invoice_id" value="{{$InvoiceNumber}}" readonly class="form-control" >
                                                     </div>
                                                 </div>
                                             </div>
@@ -100,12 +99,18 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody id="TBody">
+                                                            @php
+                                                                $i  = 0;
+                                                            @endphp
                                                             @foreach ($stock as $key => $value)
+                                                                @php
+                                                                    $i++;
+                                                                @endphp
                                                                 <tr id="TRow">
                                                                     <!-- ********************product id************************************* -->
                                                                     <td>
                                                                         <input class="form-control combine num_only_integer_quantity code vertical"
-                                                                            type="text"  name="code[]" tabIndex="-1" value="" required style="width:100px;"/>
+                                                                            type="text"  name="code[]" tabIndex="-1" readonly value="{{$i}}" style="width:100px;"/>
                                                                     </td>
                                                                     <td>
                                                                         <input class="form-control combine num_only_integer_quantity product vertical"
@@ -117,16 +122,16 @@
                                                                     </td>
                                                                     <td>
                                                                         <input class="form-control combine num_only_integer_quantity vertical total_quantity"
-                                                                            type="text"  name="total_quantity[]" tabIndex="-1" value="{{$value}}" readonly style="width:100px;"/>
+                                                                            type="text"  name="total_quantity[]" tabIndex="-1" value="{{$value}}" style="width:100px;"/>
                                                                     </td>
                                                                     <td style="padding-right: 3px">
                                                                         <input class="form-control combine num_only_integer_quantity qty vertical"
-                                                                        type="text"  name="quantity[]" tabIndex="-1" value="" onkeyup="calc(this)" required style="width:100px;"/>
+                                                                        type="text"  name="quantity[]" tabIndex="-1" value="" onkeyup="calc(this)" style="width:100px;"/>
                                                                         <span class="qty_message"></span>
                                                                     </td>
                                                                     <td>
                                                                         <input class="form-control combine num_only_integer_quantity milk_rate vertical"
-                                                                            type="text"  name="rate[]" tabIndex="-1" value="" onkeyup="calc(this)" required style="width:100px;"/>
+                                                                            type="text"  name="rate[]" tabIndex="-1" value="" onkeyup="calc(this)" style="width:100px;"/>
                                                                     </td>
                                                                     <td>
                                                                         <input class="form-control combine num_only_integer_quantity amount vertical"
@@ -240,32 +245,25 @@
         }
     }
 
-    $(function()
+    $(function() 
     {
         $('#reservation').daterangepicker({
-            "autoapply"      : true,
+            "autoapply"       : true,
             "linkedCalendars": false,
-            "dateLimit" : {
-                'months': 1,
-                'days'  : -1
-            },
-            locale          :   {
-                cancelLabel :   'Clear'
+            "showDropdowns"   : false,  // Disable month and year dropdowns
+            "showCustomRange": false,   // Disable custom range option
+            "locale"          : {
+                cancelLabel : 'Clear'
             }
-        },
-        function()
-        {
-            $('#reservation').on('apply.daterangepicker', function(ev, picker)
-            {
-                $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
-            });
+        }, function(start, end, label) {
+            $('#reservation').val(start.format('MM/DD/YYYY') + ' - ' + end.format('MM/DD/YYYY'));
         });
+
         $('.drp-calendar.right').hide();
         $('.drp-calendar.left').addClass('single');
     });
 
-    $('#reservation').on('cancel.daterangepicker', function(ev, picker)
-    {
+    $('#reservation').on('cancel.daterangepicker', function(ev, picker) {
         $(this).val('');
     });
 </script>

@@ -52,7 +52,9 @@ class MilkSpoilationController extends Controller
                 }
             }
 
-            return view('milk-spoilation.create', compact('lims_supplier_list','stock','active'));
+            $InvoiceNumber = 'MSV-' . date("Ymd") . '-'. date("his");
+
+            return view('milk-spoilation.create', compact('lims_supplier_list','stock','active','InvoiceNumber'));
         // }
         // else
         //     return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
@@ -61,15 +63,15 @@ class MilkSpoilationController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
-        // $this->validate($request, [
-        //     'invoice'      =>  'required',
-        //     'user_id'      =>  'required',
-        //     'supplier_id'  =>  'required',
-        //     'description'  =>  'required',
-        //     'total_qty'    =>  'required',
-        //     'total_amount' =>  'required',
-        // ]);
+        $this->validate($request, [
+            'invoice_id'   =>  'required',
+            'range'        =>  'required',
+            'user_id'      =>  'required',
+            'supplier_id'  =>  'required',
+            'remarks'      =>  'required',
+            'total_qty'    =>  'required',
+            'total_amount' =>  'required',
+        ]);
 
         $data      =   [];
 
@@ -126,14 +128,15 @@ class MilkSpoilationController extends Controller
 
     public function update(Request $request, $id)
     {
-        // $this->validate($request, [
-        //     'invoice'      =>  'required',
-        //     'user_id'      =>  'required',
-        //     'supplier_id'  =>  'required',
-        //     'description'  =>  'required',
-        //     'total_qty'    =>  'required',
-        //     'total_amount' =>  'required',
-        // ]);
+        $this->validate($request, [
+            'invoice_id'   =>  'required',
+            'range'        =>  'required',
+            'user_id'      =>  'required',
+            'supplier_id'  =>  'required',
+            'remarks'      =>  'required',
+            'total_qty'    =>  'required',
+            'total_amount' =>  'required',
+        ]);
 
         $milk_spoilation  =  MilkSpoilation::where('id',$id)->first();
 
@@ -184,9 +187,10 @@ class MilkSpoilationController extends Controller
 
     public function deleteBySelection(Request $request)
     {
+        dd($request->all());
         $supplier_id = $request['supplierIdArray'];
         foreach ($supplier_id as $id) {
-            $lims_supplier_data = Supplier::findOrFail($id);
+            $lims_supplier_data = MilkSpoilation::findOrFail($id);
             $lims_supplier_data->is_active = false;
             $lims_supplier_data->save();
         }

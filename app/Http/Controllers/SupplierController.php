@@ -85,7 +85,7 @@ class SupplierController extends Controller
                         'm_status'  =>  $request->$morning   ?   1   :   0,
                         'e_status'  =>  $request->$evening   ?   1   :   0,
                     ],
-                    'amount'    =>  $request->$amount   ?   $request->$amount   :   null,
+                    'amount'    =>  $request->$amount   ?   $request->$amount   :   0,
                 ]
             ];
         }
@@ -99,7 +99,7 @@ class SupplierController extends Controller
             'city'          =>  $request->city,
             'driver'        =>  $request->driver,
             'address'       =>  $request->address,
-            'advance'       =>  $request->advance   ?   $request->advance   :   null,
+            'advance'       =>  $request->advance   ?   $request->advance   :   0,
             'is_active'     =>  $request->status  ==  '1'    ?   true    :   false,
             'data'          =>  json_encode($products),
         ]);

@@ -58,6 +58,10 @@
                                                         <input class="form-control {{"$key-stock"}}" type="text" id="{{"$key-stock"}}" name="{{"$key-stock"}}" value="{{$value}}" readonly>&nbsp;
                                                     </td>
                                                     <td>
+                                                        @php
+                                                            $total_quantity =   $qty->m_qty    +   $qty->e_qty;
+                                                        @endphp
+                                                        <input class="form-control {{"$key-qty"}}" type="hidden" id="{{"$key-qty"}}" name="{{"$key-qty"}}" value="{{$total_quantity}}">
                                                         <input class="form-control {{"$key-m_qty"}}" type="text" id="{{"$key-m_qty"}}" name="{{"$key-m_qty"}}" onkeyup="calc(this)" value="{{$qty->m_qty}}">&nbsp;
                                                         <span class="qty_message"></span>
                                                     </td>
@@ -104,21 +108,24 @@
         let pk_amount       =   target+"-pk_amount";
         var m_quantity      =   $("#"+target+"-m_qty").val();
         var e_quantity      =   $("#"+target+"-e_qty").val();
+        var total_value     =   $("#"+target+"-qty").val();
         var milk_rate       =   $("#"+target+"-milk_rate").val();
         var pk_default_value=   $("#"+target+"-pk_default_value").val();
         var pk_enter_value  =   $("#"+target+"-pk_enter_value").val();
         var stock           =   $("#"+target+"-stock").val();
         m_quantity          =   parseFloat(m_quantity) || 0;
         e_quantity          =   parseFloat(e_quantity) || 0;
+        total_value         =   parseFloat(total_value) || 0;
         milk_rate           =   parseInt(milk_rate) || 0;
         pk_default_value    =   parseInt(pk_default_value) || 0;
         pk_enter_value      =   parseInt(pk_enter_value) || 0;
-        stock               =   parseInt(stock);
+        stock               =   parseInt(stock) || 0;
         let new_milk_price  =   0;
         let total_pk_value  =   0;
         let negative_value  =   0;
 
         let total_quantity  =   m_quantity  +   e_quantity;
+        let total_stock     =   stock   +   total_value;
 
         if(target  == 'cow')
         {
@@ -143,7 +150,7 @@
             $("#"+pk_amount).val(new_milk_price);
         }
 
-        if(total_quantity > stock)
+        if(total_quantity > total_stock)
         {
             $(".qty_message").eq(index).show();
             $(".qty_message").eq(index).text("Qty must be less than Stock");
